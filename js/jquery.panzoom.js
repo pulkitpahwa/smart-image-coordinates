@@ -728,9 +728,9 @@
 				var parentStyles = {
 					overflow: 'hidden'
 				};
-				if ( $parent.css('position') === 'static' ) {
-					parentStyles.position = 'relative';
-				}
+				//if ( $parent.css('position') === 'static' ) {
+				//	parentStyles.position = 'relative';
+				//}
 				$parent.css( parentStyles );
 			}
 		},
