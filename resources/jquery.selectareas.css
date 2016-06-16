@@ -1,0 +1,31 @@
+.select-areas-overlay {
+	overflow: hidden;
+	position: absolute;
+}
+
+.select-areas-outline {
+	background: #fff;
+	border : 2px solid black;
+	overflow: hidden;
+}
+
+.select-areas-resize-handler {
+	background-color: #000;
+	border: 1px #fff solid;
+	height: 8px;
+	width: 8px;
+	overflow: hidden;
+}
+
+.select-areas-delete-area {
+	background: url('delete.gif');
+	cursor: pointer;
+	height: 20px;
+	width: 20px;
+	background-size:cover;
+}
+.delete-area {
+	position: absolute;
+	cursor: pointer;
+	padding: 5px;
+}
