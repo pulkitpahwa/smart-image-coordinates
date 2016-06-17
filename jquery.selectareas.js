@@ -4,6 +4,64 @@
  * @author Catalin Dogaru (https://github.com/cdog - http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-i--net-20994)
  * @author Adrien David-Sivelle (https://github.com/AdrienDS - Refactoring, Multiselections & Mobile compatibility)
  */
+function output_coordinates(area){
+    $('.panzoom').animate({
+      transform: 'scale(1) rotate(0deg)'
+    });
+    var all_outlines = $(".select-areas-outline");
+    for(i =0;i<all_outlines.length;i++)
+    {
+        var width  = $("#" + a[i].id).width();
+    }
+    
+    var width  = area.width;
+    var height = area.height;
+    var a_x    = area.x;
+    var a_y    = area.y;
+    var b_x    = a_x + width;
+    var b_y    = a_y;
+    var c_x    = b_x;
+    var c_y    = b_y + height;
+    var d_x    = a_x;
+    var d_y    = c_y;
+                    
+    $("#output").append("<tr><td>" + a_x + "," + a_y + "</td><td> " +
+         b_x + ","  + b_y + "</td><td>"  +  c_x + "," +  c_y + "</td><td>" + 
+         d_x + "," + d_y + "</td></tr>");
+
+}
+
+function map_the_coordinates(real_x, real_y){
+    var string = $(".panzoom").css("transform");
+    if (string == "none")
+    {
+        console.log("not yet zoomed");
+        return [real_x, real_y]  ;
+    }
+    else{
+        var transform_metrics = string.substring(7, string.length - 1).split(",")
+        var zoom_level = Number(transform_metrics[0]);
+        var x_center = Number(transform_metrics[4]);
+        var y_center = Number(transform_metrics[5]);
+        var image_width = $("#example").width();
+        var image_height = $("#example").height();
+        var original_x_center = image_width/2;
+        var original_y_center = image_height/2;
+        console.log("x_center and y_center = " + x_center + ", " + y_center);
+        console.log("original_x_center and original_y_center = " + original_x_center + ", " + original_y_center);        
+        var new_image_width  = zoom_level * image_width ; 
+        var new_image_height = zoom_level * image_height ; 
+        
+        var current_x_center = original_x_center + x_center;
+        var current_y_center = original_y_center + y_center;
+        var left_new_image = current_x_center - (new_image_width/2);
+        var top_new_image = current_y_center - (new_image_height/2);    
+        var new_x = (real_x - left_new_image ) / zoom_level ;
+        var new_y = (real_y - top_new_image ) / zoom_level ;        
+        return [new_x, new_y];
+    }
+    
+}
 (function($) {
     $.imageArea = function(parent, id) {
         var options = parent.options,
@@ -26,16 +84,20 @@
                 width: 0
             },
             focus = function () {
+                console.log("focus called");
                 area.z = 100;
                 refresh();
             },
             getData = function () {
+                console.log("getData called");            
                 return area;
             },
             fireEvent = function (event) {
+                console.log("fireEvent called");            
                 $image.trigger(event, [area.id, parent.areas()]);
             },
             cancelEvent = function (e) {
+                console.log("cancelEvent called");            
                 var event = e || window.event || {};
                 event.cancelBubble = true;
                 event.returnValue = false;
@@ -43,11 +105,13 @@
                 event.preventDefault && event.preventDefault(); // jshint ignore: line
             },
             off = function() {
+                console.log("off called");    
                 $.each(arguments, function (key, val) {
                     on(val);
                 });
             },
             on = function (type, handler) {
+                console.log("on called");            
                 var browserEvent, mobileEvent;
                 switch (type) {
                     case "start":
@@ -72,6 +136,7 @@
                 }
             },
             updateSelection = function () {
+                console.log("updateSelection called");            
                 // Update the outline layer
                 $outline.css({
                     cursor: "default",
@@ -94,6 +159,7 @@
                 });
             },
             updateResizeHandlers = function (show) {
+                console.log("updateResizeHandlers called");            
                 if (! options.allowResize) {
                     return;
                 }
@@ -150,6 +216,7 @@
                 }
             },
             updateCursor = function (cursorType) {
+                console.log("updateCursor called");                
                 $outline.css({
                     cursor: cursorType
                 });
@@ -159,6 +226,7 @@
                 });
             },
             refresh = function(sender) {
+                console.log("refresh called")
                 switch (sender) {
                     case "startSelection":
                         parent._refresh();
@@ -194,6 +262,7 @@
                 }
             },
             startSelection  = function (event) {
+                console.log("startSelection called");                
                 cancelEvent(event);
 
                 // Reset the selection size
@@ -218,6 +287,7 @@
                 refresh("startSelection");
             },
             pickSelection = function (event) {
+                console.log("pickSelection called");            
                 cancelEvent(event);
                 focus();
                 on("move", moveSelection);
@@ -232,6 +302,7 @@
                 refresh("pickSelection");
             },
             pickResizeHandler = function (event) {
+                console.log("pickResizeHandler called");
                 cancelEvent(event);
                 focus();
 
@@ -256,6 +327,7 @@
                 refresh("pickResizeHandler");
             },
             resizeSelection = function (event) {
+                console.log("resizeSelection called");            
                 cancelEvent(event);
                 focus();
 
@@ -351,6 +423,7 @@
                 refresh("resizeSelection");
             },
             moveSelection = function (event) {
+                console.log("moveSelection called");            
                 cancelEvent(event);
                 if (! options.allowMove) {
                     return;
@@ -367,6 +440,7 @@
 
             },
             moveTo = function (point) {
+                console.log("moveTo called");            
                 // Set the selection position on the x-axis relative to the bounds
                 // of the image
                 if (point.x > 0) {
@@ -392,6 +466,7 @@
                 refresh("moveSelection");
             },
             releaseSelection = function (event) {
+                console.log("releaseSelection called");            
                 cancelEvent(event);
                 off("move", "stop");
 
@@ -406,9 +481,13 @@
                 fireEvent("changed");
 
                 refresh("releaseSelection");
-                console.log(area);
-                $("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
-                console.log("x = " + area.x + "\ny = " + area.y);
+//                console.log("width of area = " + area.width);
+//                console.log("height of area = "+area.height);
+                
+                output_coordinates(area);
+                
+//                $("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
+//                console.log("x = " + area.x + "\ny = " + area.y);
             },
             deleteSelection = function (event) {
                 cancelEvent(event);
@@ -425,11 +504,13 @@
                 fireEvent("changed");
             },
             getElementOffset = function (object) {
+                console.log("getElementOffset called");            
                 var offset = $(object).offset();
 
                 return [offset.left, offset.top];
             },
             getMousePosition = function (event) {
+                console.log("getMousePosition called");            
                 var imageOffset = getElementOffset($image);
 
                 if (! event.pageX) {
@@ -445,13 +526,17 @@
                         event = event.touches[0];
                     }
                 }
-                var x = event.pageX - imageOffset[0],
-                    y = event.pageY - imageOffset[1];
+                
+                //check here for the problem of focal point
+                var x = event.pageX,
+                    y = event.pageY;
+                    
+                return map_the_coordinates(x,y);
 
-                x = (x < 0) ? 0 : (x > $image.width()) ? $image.width() : x;
-                y = (y < 0) ? 0 : (y > $image.height()) ? $image.height() : y;
+//                x =  x;
+                y =  y;
 
-                return [x, y];
+//                return [x, y];
             };
 
 
@@ -550,6 +635,7 @@
     $.imageSelectAreas = function() { };
 
     $.imageSelectAreas.prototype.init = function (object, customOptions) {
+        console.log("Line 572, imageSelectAreas");
         var that = this,
             defaultOptions = {
                 allowEdit: true,
@@ -559,7 +645,7 @@
                 allowDelete: true,
                 allowNudge: true,
                 aspectRatio: 0,
-                minSize: [0, 0],
+                minSize: [40, 40],
                 maxSize: [0, 0],
                 width: 0,
                 maxAreas: 0,

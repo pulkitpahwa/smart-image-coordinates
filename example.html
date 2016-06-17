@@ -18,16 +18,17 @@
 </head>
 
 <body>
-   <div id="left focal">
+   <div id="left">
 <!--   
        <div class="image-decorator">
            <img alt="Image principale" id="example" src="bills/171-new.jpg" style = "height:400px"/>
        </div>
    </div>
--->    <section id="focal" style = "background-color:red;">
-      <div class="parent" style="overflow: hidden; position:relative">
-        <div class="panzoom image-decorator" style="transform: matrix(0.4, 0, 0, 0.4, 96.5904, 139.399); cursor: move; transition: none;">
-          <img src="bills/171-new.jpg" width="500" height="400" id = "example">
+-->    
+    <div id="" style = "background-color:red;">
+      <section class="parent" style="overflow: hidden; position:relative" id = "focal">
+        <div class="panzoom image-decorator" style=" cursor: move; transition: none;">
+          <img src="bills/171-new.jpg" width="500" id = "example">
         </div>
       </div>
       <script>
@@ -53,8 +54,15 @@
    <div id="" class = "right" style = "">
        <button type = "button" class = "btn btn-primary" id = "zoomIn">Zoom In </button>
        <button type = "button" class = "btn btn-primary" id = "zoomOut">Zoom Out</button>
-       <table class="table table-striped output" id = "output">
-       
+       <table class="table table-striped">
+           <tr>
+               <th>A</th>
+               <th>B</th>
+               <th>C</th>
+               <th>D</th>
+            </tr>
+       </table>
+       <table class="table table-striped" class = "output" id = "output">
        </table>
    </div>
 </body>

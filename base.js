@@ -1,9 +1,10 @@
 $(document).ready(function () {
     var window_width = $(window).width();
     var window_height = $(window).height();
+
     $("#left").css("width", window_width/2);
     $(".right").css("width", window_width/2-50);
-    $("#example").css("width",window_width/2);
+    $("#example").css("width",window_width/2-50);
     $('img#example').selectAreas({
     	minSize: [10, 10],
 //    	onChanged: debugQtyAreas,
