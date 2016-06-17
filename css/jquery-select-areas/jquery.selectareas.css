@@ -18,7 +18,7 @@
 }
 
 .select-areas-delete-area {
-	background: url('delete.gif');
+	background: url('../../images/delete.gif');
 	cursor: pointer;
 	height: 20px;
 	width: 20px;

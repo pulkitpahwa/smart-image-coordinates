@@ -5,7 +5,7 @@
  * @author Adrien David-Sivelle (https://github.com/AdrienDS - Refactoring, Multiselections & Mobile compatibility)
  */
 function output_coordinates(area){
-    $('.panzoom').animate({
+    /*$('.panzoom').animate({
       transform: 'scale(1) rotate(0deg)'
     });
     var all_outlines = $(".select-areas-outline");
@@ -13,21 +13,18 @@ function output_coordinates(area){
     {
         var width  = $("#" + a[i].id).width();
     }
-    
+    */
+    var image_width = $("#example").width();
+    var image_height = $("#example").height();
     var width  = area.width;
     var height = area.height;
     var a_x    = area.x;
     var a_y    = area.y;
-    var b_x    = a_x + width;
-    var b_y    = a_y;
-    var c_x    = b_x;
-    var c_y    = b_y + height;
-    var d_x    = a_x;
-    var d_y    = c_y;
-                    
-    $("#output").append("<tr><td>" + a_x + "," + a_y + "</td><td> " +
-         b_x + ","  + b_y + "</td><td>"  +  c_x + "," +  c_y + "</td><td>" + 
-         d_x + "," + d_y + "</td></tr>");
+    var c_x    = (a_x + width)/image_width;
+    var c_y    = (a_y + height)/image_height;
+    a_x = a_x / image_width;
+    a_y = a_y / image_height;                    
+    $("#output").append("<tr><td>" + a_x + "," + a_y + "</td><td>"  +  c_x + "," +  c_y + "</td></tr>");
 
 }
 
