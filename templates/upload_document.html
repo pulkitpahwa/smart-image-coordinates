@@ -1,0 +1,32 @@
+{%extends "base.html"%}
+
+{%block main_block%}
+<form class = "form-horizontal col-sm-6" action = "{{request.path}}" method="post" enctype="multipart/form-data">
+  {%csrf_token%}
+  {{form.as_p}}
+  <input type = "submit" value = "Upload Document" class = "btn btn-primary"/>
+</form>
+<script type = "text/javascript">
+  $(document).ready(function(){
+    update_template_list();
+     $("#id_category").change(function(){
+         update_template_list();
+     });
+  });
+function update_template_list(){
+         var category = $("#id_category").val();
+         console.log("category = "+ category);
+         $.get("/get_template/"+ category, function(data){
+            str = JSON.parse(data["data"]);
+            new_rows = "";
+            for(i=0; i<str.length; i++)
+            {
+                new_row_string = '<option value="' + str[i]["fields"]["slug"] + '">' + 
+                    str[i]["fields"]["template_name"]+'</option>';
+                new_rows += new_row_string;
+            }
+            $("#id_template").html(new_rows);
+         });
+}
+</script>
+{%endblock%}
