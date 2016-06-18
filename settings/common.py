@@ -37,7 +37,7 @@ CORE_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-        'autoslug',
+    'autoslug',
 ]
 
 OUR_APPS = [
@@ -122,3 +122,8 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = join(ROOT_DIR, 'staticfiles') #os.path.join > join
+STATICFILES_DIRS = (
+    join(ROOT_DIR, 'static'),    #os.path.join > join
+)
+

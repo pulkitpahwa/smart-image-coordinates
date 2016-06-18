@@ -2,7 +2,6 @@
 from __future__ import absolute_import, unicode_literals
 
 # Standart Library
-import os 
 import sys
 
 if "test" in sys.argv:

@@ -11,6 +11,7 @@ class Category(models.Model):
     category_name = models.CharField(max_length=255,
             verbose_name="Name of the Category", unique=True)
     description = models.TextField(default="", blank=True)
+    slug = AutoSlugField(populate_from="category_name", unique=True)
 
     def __str__(self):
         return self.category_name
@@ -24,6 +25,7 @@ class TemplateFormat(models.Model):
             verbose_name="Category of the Format")
     template_name = models.CharField(max_length=225,
             verbose_name="Name of template format", unique=True)
+    slug = AutoSlugField(populate_from="template_name", unique=True)
 
     def __str__(self):
         return self.template_name
