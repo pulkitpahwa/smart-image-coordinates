@@ -122,8 +122,9 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = join(ROOT_DIR, 'staticfiles') #os.path.join > join
+STATIC_ROOT = join(ROOT_DIR, 'staticfiles') 
 STATICFILES_DIRS = (
-    join(ROOT_DIR, 'static'),    #os.path.join > join
+    join(ROOT_DIR, 'static'),    
 )
 
+MEDIA_ROOT = join(ROOT_DIR, 'media')
