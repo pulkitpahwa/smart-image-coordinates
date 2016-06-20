@@ -17,16 +17,22 @@ function update_template_list(){
          var category = $("#id_category").val();
          console.log("category = "+ category);
          $.get("/get_template/"+ category, function(data){
-            str = JSON.parse(data["data"]);
-            new_rows = "";
-            for(i=0; i<str.length; i++)
+            if(data["error"] == "true")
             {
-                new_row_string = '<option value="' + str[i]["fields"]["slug"] + '">' + 
-                    str[i]["fields"]["template_name"]+'</option>';
-                new_rows += new_row_string;
+               alert(data["message"]);
             }
-            $("#id_template").html(new_rows);
-         });
+            else{
+               str = JSON.parse(data["data"]);
+               new_rows = "";
+               for(i=0; i<str.length; i++)
+               {
+                   new_row_string = '<option value="' + str[i]["fields"]["slug"] + '">' + 
+                       str[i]["fields"]["template_name"]+'</option>';
+                   new_rows += new_row_string;
+               }
+               $("#id_template").html(new_rows);
+            }
+        });
 }
 </script>
 {%endblock%}
