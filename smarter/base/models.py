@@ -68,7 +68,7 @@ class Document(models.Model):
     element = models.ManyToManyField(TemplateElement,
             through='ExtractedElements')
     slug = AutoSlugField(populate_from="document_name", unique=True)
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def __str__(self):
         return self.document_name
