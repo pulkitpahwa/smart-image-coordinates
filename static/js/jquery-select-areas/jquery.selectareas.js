@@ -5,34 +5,48 @@
  * @author Adrien David-Sivelle (https://github.com/AdrienDS - Refactoring, Multiselections & Mobile compatibility)
  */
 function output_coordinates(area){
-    /*$('.panzoom').animate({
+    $('.panzoom').animate({
       transform: 'scale(1) rotate(0deg)'
     });
     var all_outlines = $(".select-areas-outline");
-    for(i =0;i<all_outlines.length;i++)
-    {
-        var width  = $("#" + a[i].id).width();
-    }
-    */
     var image_width = $("#example").width();
     var image_height = $("#example").height();
-    var width  = area.width;
-    var height = area.height;
-    var a_x    = area.x;
-    var a_y    = area.y;
-    var c_x    = (a_x + width)/image_width;
-    var c_y    = (a_y + height)/image_height;
-    a_x = a_x / image_width;
-    a_y = a_y / image_height;                    
-    $("#output").append("<tr><td>" + a_x + "," + a_y + "</td><td>"  +  c_x + "," +  c_y + "</td></tr>");
+    $("#output").html("");
+    $("#output").append("<tr><th>Object</th><th>A</th><th>Width</th><th>Height</th></tr>")
+    
+    for(i =0;i<all_outlines.length;i++)
+    {
+//        var width  = $("#" + all_outlines[i].id).width();
+//        console.log(all_outlines[i].id);
+//        var height = $("#"+all_outlines[i].id).height();
+//        var a_x = $("#"+all_outlines[i].id).position().left/image_width;
+//        var a_y = $("#"+all_outlines[i].id).position().top/image_height;        
+//        var c_x = ($("#"+all_outlines[i].id).position().left + width)/image_width;
+//        var c_y = ($("#"+all_outlines[i].id).position().top + height)/image_height;        
+//        console.log("ax = "+ a_x);
+//        console.log("ay = "+ a_y);
 
+        var width  = $("#" + all_outlines[i].id).width();
+        var height = $("#"+all_outlines[i].id).height();
+        //console.log(all_outlines[i].id);
+        var a_x = $("#"+all_outlines[i].id).position().left;
+        var a_y = $("#"+all_outlines[i].id).position().top;        
+        var c_x = ($("#"+all_outlines[i].id).position().left + width);
+        var c_y = ($("#"+all_outlines[i].id).position().top + height);        
+        //$("#output").html("<tr><td>" + a_x + "," + a_y + "</td><td>"  +  c_x + "," +  c_y + "</td></tr>");
+        $("#output").append("<tr><td>"+ all_outlines[i].id + "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+        var a_x = $("#"+all_outlines[i].id).position().left/image_width;
+        var a_y = $("#"+all_outlines[i].id).position().top/image_height;        
+        var c_x = ($("#"+all_outlines[i].id).position().left + width)/image_width;
+        var c_y = ($("#"+all_outlines[i].id).position().top + height)/image_height;        
+    }
 }
 
 function map_the_coordinates(real_x, real_y){
     var string = $(".panzoom").css("transform");
     if (string == "none")
     {
-        console.log("not yet zoomed");
+        //console.log("not yet zoomed");
         return [real_x, real_y]  ;
     }
     else{
@@ -44,8 +58,8 @@ function map_the_coordinates(real_x, real_y){
         var image_height = $("#example").height();
         var original_x_center = image_width/2;
         var original_y_center = image_height/2;
-        console.log("x_center and y_center = " + x_center + ", " + y_center);
-        console.log("original_x_center and original_y_center = " + original_x_center + ", " + original_y_center);        
+        //console.log("x_center and y_center = " + x_center + ", " + y_center);
+        //console.log("original_x_center and original_y_center = " + original_x_center + ", " + original_y_center);        
         var new_image_width  = zoom_level * image_width ; 
         var new_image_height = zoom_level * image_height ; 
         
@@ -81,20 +95,20 @@ function map_the_coordinates(real_x, real_y){
                 width: 0
             },
             focus = function () {
-                console.log("focus called");
+                //console.log("focus called");
                 area.z = 100;
                 refresh();
             },
             getData = function () {
-                console.log("getData called");            
+                //console.log("getData called");            
                 return area;
             },
             fireEvent = function (event) {
-                console.log("fireEvent called");            
+                //console.log("fireEvent called");            
                 $image.trigger(event, [area.id, parent.areas()]);
             },
             cancelEvent = function (e) {
-                console.log("cancelEvent called");            
+                //console.log("cancelEvent called");            
                 var event = e || window.event || {};
                 event.cancelBubble = true;
                 event.returnValue = false;
@@ -102,13 +116,13 @@ function map_the_coordinates(real_x, real_y){
                 event.preventDefault && event.preventDefault(); // jshint ignore: line
             },
             off = function() {
-                console.log("off called");    
+                //console.log("off called");    
                 $.each(arguments, function (key, val) {
                     on(val);
                 });
             },
             on = function (type, handler) {
-                console.log("on called");            
+                //console.log("on called");            
                 var browserEvent, mobileEvent;
                 switch (type) {
                     case "start":
@@ -133,7 +147,7 @@ function map_the_coordinates(real_x, real_y){
                 }
             },
             updateSelection = function () {
-                console.log("updateSelection called");            
+                //console.log("updateSelection called");            
                 // Update the outline layer
                 $outline.css({
                     cursor: "default",
@@ -156,7 +170,7 @@ function map_the_coordinates(real_x, real_y){
                 });
             },
             updateResizeHandlers = function (show) {
-                console.log("updateResizeHandlers called");            
+                //console.log("updateResizeHandlers called");            
                 if (! options.allowResize) {
                     return;
                 }
@@ -213,7 +227,7 @@ function map_the_coordinates(real_x, real_y){
                 }
             },
             updateCursor = function (cursorType) {
-                console.log("updateCursor called");                
+                //console.log("updateCursor called");                
                 $outline.css({
                     cursor: cursorType
                 });
@@ -223,7 +237,7 @@ function map_the_coordinates(real_x, real_y){
                 });
             },
             refresh = function(sender) {
-                console.log("refresh called")
+                //console.log("refresh called")
                 switch (sender) {
                     case "startSelection":
                         parent._refresh();
@@ -259,7 +273,7 @@ function map_the_coordinates(real_x, real_y){
                 }
             },
             startSelection  = function (event) {
-                console.log("startSelection called");                
+                //console.log("startSelection called");                
                 cancelEvent(event);
 
                 // Reset the selection size
@@ -284,7 +298,7 @@ function map_the_coordinates(real_x, real_y){
                 refresh("startSelection");
             },
             pickSelection = function (event) {
-                console.log("pickSelection called");            
+                //console.log("pickSelection called");            
                 cancelEvent(event);
                 focus();
                 on("move", moveSelection);
@@ -299,7 +313,7 @@ function map_the_coordinates(real_x, real_y){
                 refresh("pickSelection");
             },
             pickResizeHandler = function (event) {
-                console.log("pickResizeHandler called");
+                //console.log("pickResizeHandler called");
                 cancelEvent(event);
                 focus();
 
@@ -324,7 +338,7 @@ function map_the_coordinates(real_x, real_y){
                 refresh("pickResizeHandler");
             },
             resizeSelection = function (event) {
-                console.log("resizeSelection called");            
+                //console.log("resizeSelection called");            
                 cancelEvent(event);
                 focus();
 
@@ -420,7 +434,7 @@ function map_the_coordinates(real_x, real_y){
                 refresh("resizeSelection");
             },
             moveSelection = function (event) {
-                console.log("moveSelection called");            
+                //console.log("moveSelection called");            
                 cancelEvent(event);
                 if (! options.allowMove) {
                     return;
@@ -437,7 +451,7 @@ function map_the_coordinates(real_x, real_y){
 
             },
             moveTo = function (point) {
-                console.log("moveTo called");            
+                //console.log("moveTo called");            
                 // Set the selection position on the x-axis relative to the bounds
                 // of the image
                 if (point.x > 0) {
@@ -463,7 +477,7 @@ function map_the_coordinates(real_x, real_y){
                 refresh("moveSelection");
             },
             releaseSelection = function (event) {
-                console.log("releaseSelection called");            
+                //console.log("releaseSelection called");            
                 cancelEvent(event);
                 off("move", "stop");
 
@@ -495,19 +509,19 @@ function map_the_coordinates(real_x, real_y){
                 });
                 $btDelete.remove();
                 parent._remove(id);
-                console.log(area);
-                $("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
+                //console.log(area);
+                //$("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
                 //$(".right").append("<br>x = " + area.x + "<br>y = " + area.y );
                 fireEvent("changed");
             },
             getElementOffset = function (object) {
-                console.log("getElementOffset called");            
+                //console.log("getElementOffset called");            
                 var offset = $(object).offset();
 
                 return [offset.left, offset.top];
             },
             getMousePosition = function (event) {
-                console.log("getMousePosition called");            
+                //console.log("getMousePosition called");            
                 var imageOffset = getElementOffset($image);
 
                 if (! event.pageX) {
@@ -632,7 +646,7 @@ function map_the_coordinates(real_x, real_y){
     $.imageSelectAreas = function() { };
 
     $.imageSelectAreas.prototype.init = function (object, customOptions) {
-        console.log("Line 572, imageSelectAreas");
+        //console.log("Line 572, imageSelectAreas");
         var that = this,
             defaultOptions = {
                 allowEdit: true,
