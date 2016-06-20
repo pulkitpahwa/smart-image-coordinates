@@ -122,7 +122,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = join(ROOT_DIR, 'staticfiles') 
+STATIC_ROOT = join(ROOT_DIR, 'static') 
 STATICFILES_DIRS = (
     join(ROOT_DIR, 'static'),    
 )
