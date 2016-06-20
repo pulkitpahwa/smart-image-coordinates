@@ -945,7 +945,7 @@
 		 * @param {TouchList} [touches] The touches list if present
 		 */
 		_startMove: function( event, touches ) {
-		    console.log("position = " + $("#example").position());
+		    //console.log("position = " + $("#example").position());
 			var move,
 				startDistance, startScale, startMiddle,
 				startPageX, startPageY;
@@ -1015,7 +1015,7 @@
 				.off( ns )
 				.on( moveEvent, move )
 				.on( endEvent, function( e ) {
-				    console.log("position1 = " + $("#example").position());
+				    //console.log("position1 = " + $("#example").position());
 					e.preventDefault();
 					$(this).off( ns );
 					self.panning = false;
@@ -1037,7 +1037,7 @@
 
 		// Call methods widget-style
 		if ( typeof options === 'string' ) {
-		    console.log($("#example").position());
+		    //console.log($("#example").position());
 			ret = [];
 			args = slice.call( arguments, 1 );
 			this.each(function() {
