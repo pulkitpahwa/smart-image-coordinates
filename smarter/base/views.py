@@ -1,6 +1,7 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
+from django.core.urlresolvers import reverse
 
 from .models import (Category,
                     TemplateFormat,
@@ -44,7 +45,7 @@ def create_category(request):
         category = Category.objects.create(
                         category_name=form.cleaned_data['category_name'],
                         description=form.cleaned_data['description'])
-        return HttpResponse('category created')
+        return HttpResponseRedirect(reverse('create-template'))
 
 
 def create_template_format(request):
@@ -61,12 +62,12 @@ def create_template_format(request):
                                      context_instance=RequestContext(request))
 
         category = get_object_or_404(Category,
-                                 category_name=form.cleaned_data['category'])
+                                 slug=form.cleaned_data['category'])
         template = TemplateFormat.objects.create(
                 category=category,
                 template_name=form.cleaned_data['template_name']
                 )
-        return HttpResponse(template.slug)
+        return HttpResponseRedirect(reverse("upload_document"))
 
 
 def upload_document(request):
@@ -90,4 +91,13 @@ def upload_document(request):
                 document_name=form.cleaned_data['document_name'],
                 document=request.FILES['document']
         )
-        return HttpResponse("document uploaded")
+        return HttpResponseRedirect(reverse('particular_document',
+            kwargs={"unique_id":document.id}))
+
+def particular_document(request, unique_id):
+    document = get_object_or_404(Document, id=unique_id)
+    if request.method == "GET":
+        return render_to_response('document_selector.html',
+                                  {"document":document},
+                                  context_instance=RequestContext(request))
+

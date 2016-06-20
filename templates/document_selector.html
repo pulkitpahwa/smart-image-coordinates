@@ -1,26 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+{%extends "base.html"%}
+{%block head%}
    <title>Demo Select Areas</title>
-   <link href="static/css/example.css" media="screen" rel="stylesheet" type="text/css" />
-   <link href="static/css/jquery-select-areas/jquery.selectareas.css" media="screen" rel="stylesheet" type="text/css" />
-   <link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+   <link href="/static/css/example.css" media="screen" rel="stylesheet" type="text/css" />
+   <link href="/static/css/jquery-select-areas/jquery.selectareas.css" media="screen" rel="stylesheet" type="text/css" />
+   <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
    <!--[if lte IE 8]>
       <link href="css/jquery-select-areas/jquery.selectareas.ie8.css" media="screen" rel="stylesheet" type="text/css" /> 
    <![endif]-->
-   <script type = "text/javascript" src = "static/js/jquery.js"></script>
-   <script type = "text/javascript" src = "static/js/base.js"></script>
-   <script type = "text/javascript" src = "static/bootstrap/js/bootstrap.min.js"></script>
-   <script type = "text/javascript" src = "static/js/jquery-panzoom/jquery.panzoom.js"></script>
-   <script type = "text/javascript" src = "static/js/jquery-select-areas/jquery.selectareas.js"></script>
-</head>
-
-<body>
+   <script type = "text/javascript" src = "/static/js/base.js"></script>
+   <script type = "text/javascript" src = "/static/bootstrap/js/bootstrap.min.js"></script>
+   <script type = "text/javascript" src = "/static/js/jquery-panzoom/jquery.panzoom.js"></script>
+   <script type = "text/javascript" src = "/static/js/jquery-select-areas/jquery.selectareas.js"></script>
+{%endblock%}
+{%block main_block%}
    <div id="left">
     <section class="parent" style="overflow: hidden; position:relative" id = "focal">
         <div class="panzoom image-decorator" style=" cursor: move; transition: none;">
-          <img src="static/bills/171-2.jpg" id = "example">
+            <img src="/media/{{document.document}}" id = "example">
         </div>
       <script>
         (function() {
@@ -52,5 +48,4 @@
        <table class="table table-striped" class = "output" id = "output">
        </table>
    </div>
-</body>
-</html>
+{%endblock%}
