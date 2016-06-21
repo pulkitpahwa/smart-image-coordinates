@@ -1,0 +1,158 @@
+{%extends "base.html"%}
+{%block head%}
+  <title>Demo Select Areas</title>
+  {%load static from staticfiles%}
+  <link href="{%static 'css/example.css' %}" media="screen" rel="stylesheet" type="text/css" />
+  <link href="{%static 'css/jquery-select-areas/jquery.selectareas.css' %}" media="screen" rel="stylesheet" type="text/css" />
+   <!--[if lte IE 8]>
+      <link href="css/jquery-select-areas/jquery.selectareas.ie8.css" media="screen" rel="stylesheet" type="text/css" /> 
+   <![endif]-->
+  <script type = "text/javascript" >
+  
+        //initialise elements_available from the elements that exist for the 
+        //template of given document
+        var elements_available =  {  {%for element in elements%} "{{element.id}}": "{{element.element_name}}" {%if not forloop.last%},{%endif%} {%endfor%}      };
+        //initialise other variables
+        var elements_used = {};
+        var elements_binding = {};
+        var rectangle_binding = {};
+        var element_rectangle = {};
+
+  </script>
+  <script type = "text/javascript" src = "{%static 'js/base.js' %}"></script>
+  <script type = "text/javascript" src = "{%static 'bootstrap/js/bootstrap.min.js' %}"></script>
+  <script type = "text/javascript" src = "{%static 'js/jquery-panzoom/jquery.panzoom.js' %}"></script>
+  
+  <script type = "text/javascript" src = "{%static 'js/jquery-select-areas/jquery.selectareas.js' %}"></script>
+  <script type = "text/javascript" >
+    $(document).ready(function(){
+          
+        //set variables to local storage
+
+        localStorage.setItem("elements_available", JSON.stringify(elements_available));
+        localStorage.setItem("elements_used", JSON.stringify(elements_used));
+        localStorage.setItem("elements_binding", JSON.stringify(elements_binding));
+        localStorage.setItem("rectangle_binding", JSON.stringify(rectangle_binding));
+        localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));
+        
+        //function to update_elements of dropdown select box
+        function update_elements_tables(array_name, id){
+            var all_options = "<option value='----'>-----</option> ";            
+            $.each(array_name, function(key, value){
+                if (id == "elements_available")
+                {
+                    var option_string = "<option value='" + key  + "'>" + value + "</option> " ;
+                }
+                else{
+                   var option_string = "<option value='" + value  + "'>" + key + "</option> " ;
+                }
+                all_options += option_string ;
+            });
+            $("#"+ id).html(all_options);
+        }
+
+        update_elements_tables(elements_available, "elements_available");
+        
+        var binding = {};
+
+        $("#elements_available").change(function(){
+            /*
+                Update the project if a new object is selected from the 
+                elements_available dropdown
+            */
+
+            var value = $("#elements_available").val();
+            var value_selected = elements_available[value];
+            console.log("vs = ", value_selected);
+            elements_used[value_selected] = value;
+            
+            
+            /*
+            create new rectangle_box. UPdate this function when implementing preview
+            functionality. get x, y, height, width from the average of the x, y, height, width
+            of that particular element and update the values in the areaOptions
+            */
+            // set line 75 to 86 on loop on every element that exist
+            var areaOptions = {
+                x: Math.floor((Math.random() * 200)),
+                y: Math.floor((Math.random() * 200)),
+                width: Math.floor((Math.random() * 100)) + 50,
+                height: Math.floor((Math.random() * 100)) + 20,
+            };
+
+
+            //call the function to initialise the rectangle_box with areaOptions
+            $('img#example').selectAreas('add', areaOptions);
+
+            //get the rectangle box count 
+            var count_select_areas = $(".select-areas-outline").length ;
+            var rectangle_box_id = 'rectangle_box'+count_select_areas;
+            binding[rectangle_box_id] = value_selected;
+
+            //for the current selection set border color red
+            $(".select-areas-outline").css("border", "1px solid black")
+            $("#"+rectangle_box_id).css("border","1px solid red");
+
+            //update rectangle_binding, element_rectangle and elements_binding 
+            //local associative arrays
+            rectangle_binding[rectangle_box_id] = value_selected;
+            element_rectangle[value_selected] = rectangle_box_id;
+            elements_binding[ value_selected ] = binding;
+
+//            console.log("elements_available = ", elements_available);
+//            console.log("elements_used = ", elements_used);
+
+            //update elements_available and elements_used dropdown
+            update_elements_tables(elements_available, "elements_available");
+            update_elements_tables(elements_used, "elements_used");
+
+            //update local storage variables
+            localStorage.setItem("elements_available", JSON.stringify(elements_available));
+            localStorage.setItem("elements_used", JSON.stringify(elements_used));
+            localStorage.setItem("elements_binding", JSON.stringify(elements_binding))    ;
+            localStorage.setItem("rectangle_binding", JSON.stringify(rectangle_binding));
+            localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));
+
+            //output the co-ordinates on right hand side 
+            output_coordinates();
+        });
+    });
+  </script>
+{%endblock%}
+{%block main_block%}
+   <div id="left" class = "col-sm-12 col-md-6 col-xs-12 col-lg-6">
+    <section class="parent" style="overflow: hidden; position:relative" id = "focal">
+        <div class="panzoom image-decorator" style=" cursor: move; transition: none;">
+            <img src="/media/{{document.document}}" id = "example">
+        </div>
+      <script>
+        (function() {
+          //function controlling the zoom on the image
+          var zoom_level = 0;
+          var $section = $('#focal');
+          var $panzoom = $section.find('.panzoom').panzoom();
+          $panzoom.parent().on('mousewheel.focal', function( e ) {
+            e.preventDefault();
+            var delta = e.delta || e.originalEvent.wheelDelta;
+            var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+            zoom_level += 1;
+//            console.log(zoom_level);
+            $panzoom.panzoom('zoom', zoomOut, {
+              increment: 0.1,
+              focal: e, 
+            });
+          });           
+        })();
+      </script>
+    </section>
+   </div>
+   <div class = "right" class = "col-sm-12 col-md-6 col-xs-12 col-lg-6">
+       <select id="elements_available" name="" class = "dropdown form-control">
+       </select>
+       <select id="elements_used" name="" class = "dropdown form-control">
+       </select>
+       <table class="table table-striped" class = "output" id = "output">
+       </table>
+   </div>
+   
+{%endblock%}

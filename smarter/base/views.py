@@ -2,6 +2,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import (Category,
                     TemplateFormat,
@@ -12,6 +13,7 @@ from .models import (Category,
 from .forms import CreateCategoryForm, TemplateFormatForm, DocumentForm
 from .serializers import get_templates_for_category
 
+import json
 
 def home(request):
     return render_to_response("home.html", {},
@@ -94,10 +96,53 @@ def upload_document(request):
         return HttpResponseRedirect(reverse('particular_document',
             kwargs={"unique_id":document.id}))
 
+
+@csrf_exempt
 def particular_document(request, unique_id):
     document = get_object_or_404(Document, id=unique_id)
+    all_elements = document.template_format.templateelement_set.all()
     if request.method == "GET":
         return render_to_response('document_selector.html',
-                                  {"document":document},
+                                  {"document": document,
+                                  "elements": all_elements},
                                   context_instance=RequestContext(request))
+
+    elif request.method == "POST":
+        # print "\n\n\nhello \n\n\n\n"
+        data = json.loads(json.loads( request.POST['data'] ))
+        if document.image_resolution_x and document.image_resolution_y :
+            pass
+        else :
+            document.image_resolution_x = data["image_width"]
+            document.image_resolution_x = data["image_height"]
+            document.save()
+        template = document.template_format
+        for element_name in data["elements"]:
+            element = TemplateElement.objects.get_or_create(
+                    template=template, element_name=element_name )[0]
+            ExtractedElements.objects.create(document = document,
+                            element = element,
+                            x1_coordinate=data[element_name]["x"],
+                            y1_coordinate=data[element_name]["y"],
+                            block_width=data[element_name]["width"],
+                            block_height=data[element_name]["height"]
+                    )
+        # print "\n\n\n\n"
+        return JsonResponse({"error":"false","message":"Successfully saved elements"})
+
+
+def all_documents(request):
+    documents = Document.objects.all()
+    if request.method == "GET":
+        return render_to_response("all_documents.html",
+                                  {"documents": documents},
+                                  context_instance=RequestContext(request))
+
+
+def document_elements(request, unique_id):
+    document = get_object_or_404(Document, id=unique_id)
+    return render_to_response("document_elements.html",
+                              {"document": document},
+                              context_instance=RequestContext(request))
+
 

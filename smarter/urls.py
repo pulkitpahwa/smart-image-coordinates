@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^$', base_views.home, name='home'),
     url(r'^admin/', admin.site.urls),
     url(r'^category/add$', base_views.create_category, name='create-category'),
+    url(r'^document/all$', base_views.all_documents, name='all_documents'),
     url(r'^template/add$', base_views.create_template_format,
         name='create-template'),
     url(r'^get_template/(?P<category>[-\w]+)$', base_views.get_all_template_formats,

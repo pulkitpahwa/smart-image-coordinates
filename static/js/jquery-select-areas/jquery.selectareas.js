@@ -4,44 +4,107 @@
  * @author Catalin Dogaru (https://github.com/cdog - http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-i--net-20994)
  * @author Adrien David-Sivelle (https://github.com/AdrienDS - Refactoring, Multiselections & Mobile compatibility)
  */
-function output_coordinates(area){
-    $('.panzoom').animate({
-      transform: 'scale(1) rotate(0deg)'
+function output_coordinates(action){
+  $('.panzoom').animate({
+    transform: 'scale(1) rotate(0deg)'
+  });
+  var elements_used = JSON.parse(localStorage.getItem("elements_used"));
+  var elements_available = JSON.parse(localStorage.getItem("elements_available"));
+  var elements_binding = JSON.parse(localStorage.getItem("elements_bining"));
+  var rectangle_binding = JSON.parse(localStorage.getItem("rectangle_binding"));
+  var element_rectangle = JSON.parse(localStorage.getItem("element_rectangle"));
+  var all_outlines = $(".select-areas-outline");
+  var image_width = $("#example").width();
+  var image_height = $("#example").height();
+  //console.log("elements_binding = ", elements_binding);
+
+  $("#output").html("");
+  $("#output").append("<tr><th>Object</th><th>A</th><th>Width</th><th>Height</th></tr>");
+  var rectangles =  [];
+  var image = $("img#example")[0];
+  var image_resolution_x = image.naturalWidth;
+  var image_resolution_y = image.naturalHeight;            
+  
+  for(i =0;i<all_outlines.length;i++)
+  {
+      var box_id = all_outlines[i].id;
+      rectangles.push(box_id)
+
+      var width  = $("#" + box_id).width();
+      var height = $("#"+box_id).height();
+      //console.log(all_outlines[i].id);
+/*      var a_x = $("#"+box_id).position().left;
+      var a_y = $("#"+box_id).position().top;        
+      var c_x = ($("#"+box_id).position().left + width);
+      var c_y = ($("#"+box_id).position().top + height);        
+*/      var a_x = $("#"+box_id).position().left*image_resolution_x/image_width;
+      var a_y = $("#"+box_id).position().top*image_resolution_y/image_height;        
+      var c_x = ($("#"+box_id).position().left + width)/image_width;
+      var c_y = ($("#"+box_id).position().top + height)/image_height;        
+
+      var height_ratio = height/image_height;
+      var width_ratio = width/image_width;
+      var width  = width_ratio * image_resolution_x;
+      var height = height_ratio * image_resolution_y ;
+
+      $("#output").append("<tr><td>"+ rectangle_binding[box_id] + "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+  
+  }
+  function update_elements_tables(array_name, id){
+    //console.log("element  = ", array_name);
+    var all_options = "<option value='----'>-----</option> ";
+    $.each(array_name, function(key, value){
+        //console.log("key, value = ", key, value, id);
+        if (id == "elements_available")
+        {
+            var option_string = "<option value='" + key  + "'>" + value + "</option> " ;
+        }
+        else{
+           var option_string = "<option value='" + value  + "'>" + key + "</option> " ;
+        }
+        all_options += option_string ;
+        $("#"+ id).html(all_options);
+        //console.log(array_name);
     });
-    var all_outlines = $(".select-areas-outline");
-    var image_width = $("#example").width();
-    var image_height = $("#example").height();
-    $("#output").html("");
-    $("#output").append("<tr><th>Object</th><th>A</th><th>Width</th><th>Height</th></tr>")
-    
-    for(i =0;i<all_outlines.length;i++)
-    {
-//        var width  = $("#" + all_outlines[i].id).width();
-//        console.log(all_outlines[i].id);
-//        var height = $("#"+all_outlines[i].id).height();
-//        var a_x = $("#"+all_outlines[i].id).position().left/image_width;
-//        var a_y = $("#"+all_outlines[i].id).position().top/image_height;        
-//        var c_x = ($("#"+all_outlines[i].id).position().left + width)/image_width;
-//        var c_y = ($("#"+all_outlines[i].id).position().top + height)/image_height;        
-//        console.log("ax = "+ a_x);
-//        console.log("ay = "+ a_y);
+  }  
 
-        var width  = $("#" + all_outlines[i].id).width();
-        var height = $("#"+all_outlines[i].id).height();
-        //console.log(all_outlines[i].id);
-        var a_x = $("#"+all_outlines[i].id).position().left;
-        var a_y = $("#"+all_outlines[i].id).position().top;        
-        var c_x = ($("#"+all_outlines[i].id).position().left + width);
-        var c_y = ($("#"+all_outlines[i].id).position().top + height);        
-        //$("#output").html("<tr><td>" + a_x + "," + a_y + "</td><td>"  +  c_x + "," +  c_y + "</td></tr>");
-        $("#output").append("<tr><td>"+ all_outlines[i].id + "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
-        var a_x = $("#"+all_outlines[i].id).position().left/image_width;
-        var a_y = $("#"+all_outlines[i].id).position().top/image_height;        
-        var c_x = ($("#"+all_outlines[i].id).position().left + width)/image_width;
-        var c_y = ($("#"+all_outlines[i].id).position().top + height)/image_height;        
-    }
+  if (action == "delete")
+  {     
+        $.each(rectangle_binding, function(key, value){
+            //console.log(key, value);
+            if ($.inArray(key, rectangles) == -1){
+                var element_name = rectangle_binding[key];
+                var element_id = elements_used[element_name];
+              //  console.log("deleting " , elements_used[element_name], element_name);
+                delete elements_used[element_name];
+                elements_available[element_id] = element_name ;
+                //console.log("elements_available = " , elements_available[element_id], element_name);
+            }
+        });
+        
+//        console.log("elements_available = ", elements_available);
+//        console.log("elements used = ", elements_used);
+
+//        update_elements_tables(elements_used, "elements_used");
+        update_elements_tables(elements_available, "elements_available");
+//        console.log("elements_available = ", elements_available);
+//        console.log("elements used = ", elements_used);
+        localStorage.setItem("elements_available", JSON.stringify(elements_available));
+        localStorage.setItem("elements_used", JSON.stringify(elements_used));
+        localStorage.setItem("elements_binding", JSON.stringify(elements_binding))    ;
+        localStorage.setItem("rectangle_binding", JSON.stringify(rectangle_binding));
+        localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));         
+  }
+  else{
+
+        //    $("#"+ id).html(all_options);
+            //console.log(array_name);
+        
+        update_elements_tables(elements_used, "elements_used");
+        update_elements_tables(elements_available, "elements_available");
+
+  }
 }
-
 function map_the_coordinates(real_x, real_y){
     var string = $(".panzoom").css("transform");
     if (string == "none")
@@ -74,7 +137,10 @@ function map_the_coordinates(real_x, real_y){
     
 }
 (function($) {
+    //console.log("parent = ",$(this).parent());
     $.imageArea = function(parent, id) {
+        //console.log("parent += ",parent);
+        //console.log("line 80");
         var options = parent.options,
             $image = parent.$image,
             $trigger = parent.$trigger,
@@ -170,7 +236,7 @@ function map_the_coordinates(real_x, real_y){
                 });
             },
             updateResizeHandlers = function (show) {
-                //console.log("updateResizeHandlers called");            
+
                 if (! options.allowResize) {
                     return;
                 }
@@ -495,7 +561,7 @@ function map_the_coordinates(real_x, real_y){
 //                console.log("width of area = " + area.width);
 //                console.log("height of area = "+area.height);
                 
-                output_coordinates(area);
+                output_coordinates("");
                 
 //                $("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
 //                console.log("x = " + area.x + "\ny = " + area.y);
@@ -509,6 +575,7 @@ function map_the_coordinates(real_x, real_y){
                 });
                 $btDelete.remove();
                 parent._remove(id);
+                output_coordinates("delete");
                 //console.log(area);
                 //$("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
                 //$(".right").append("<br>x = " + area.x + "<br>y = " + area.y );
@@ -552,7 +619,8 @@ function map_the_coordinates(real_x, real_y){
 
 
         // Initialize an outline layer and place it above the trigger layer
-        var count_select_areas = $(".select-areas-outline").length + 1
+        var count_select_areas = $(".select-areas-outline").length + 1;
+
         $outline = $("<div class=\"select-areas-outline\" id ='rectangle_box" + count_select_areas + 
          "'  />").css({
                 opacity : options.outlineOpacity,
@@ -592,7 +660,7 @@ function map_the_coordinates(real_x, real_y){
                     .bind("tap", deleteSelection);
                 return $obj;
             };
-            $btDelete = bindToDelete($("<div class=\"delete-area\" />"))
+            $btDelete = bindToDelete($("<div class=\"delete-area\" id = 'delete_button" + count_select_areas+ "'/>"))
                 .append(bindToDelete($("<div class=\"select-areas-delete-area\" />")))
                 .insertAfter($selection);
         }
@@ -656,7 +724,7 @@ function map_the_coordinates(real_x, real_y){
                 allowDelete: true,
                 allowNudge: true,
                 aspectRatio: 0,
-                minSize: [40, 40],
+                minSize: [10, 10],
                 maxSize: [0, 0],
                 width: 0,
                 maxAreas: 0,
@@ -894,8 +962,10 @@ function map_the_coordinates(real_x, real_y){
     };
 
     $.selectAreas = function(object, options) {
+        //console.log("line 900");
         var $object = $(object);
         if (! $object.data("mainImageSelectAreas")) {
+            //console.log("line 903");
             var mainImageSelectAreas = new $.imageSelectAreas();
             mainImageSelectAreas.init(object, options);
             $object.data("mainImageSelectAreas", mainImageSelectAreas);
@@ -906,7 +976,9 @@ function map_the_coordinates(real_x, real_y){
 
 
     $.fn.selectAreas = function(customOptions) {
+        //console.log("line 913");
         if ( $.imageSelectAreas.prototype[customOptions] ) { // Method call
+            //console.log("line 915");
             var ret = $.imageSelectAreas.prototype[ customOptions ].apply( $.selectAreas(this), Array.prototype.slice.call( arguments, 1 ));
             return typeof ret === "undefined" ? this : ret;
 
@@ -915,6 +987,7 @@ function map_the_coordinates(real_x, real_y){
             this.each(function() {
                 var currentObject = this,
                     image = new Image();
+                //console.log("current object = ", currentObject);
 
                 // And attach selectAreas when the object is loaded
                 image.onload = function() {
