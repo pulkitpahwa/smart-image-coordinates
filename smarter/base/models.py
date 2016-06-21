@@ -61,6 +61,7 @@ class Document(models.Model):
     """
     Document whose elements are to be extracted
     """
+    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     template_format = models.ForeignKey(TemplateFormat)
     document_name = models.CharField(max_length=255,
             verbose_name='name of document')
@@ -68,7 +69,8 @@ class Document(models.Model):
     element = models.ManyToManyField(TemplateElement,
             through='ExtractedElements')
     slug = AutoSlugField(populate_from="document_name", unique=True)
-    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    image_resolution_x  = models.IntegerField(blank = True, null = True)
+    image_resolution_y = models.IntegerField(blank = True, null = True)
 
     def __str__(self):
         return self.document_name
@@ -97,8 +99,10 @@ class ExtractedElements(models.Model):
     element = models.ForeignKey(TemplateElement)
     x1_coordinate = models.FloatField()
     y1_coordinate = models.FloatField()
-    x2_coordinate = models.FloatField()
-    y2_coordinate = models.FloatField()
+    x2_coordinate = models.FloatField(blank = True, null = True)
+    y2_coordinate = models.FloatField(blank = True, null = True)
+    block_height = models.FloatField(blank = True, null = True)
+    block_width = models.FloatField(blank = True, null = True)
 
     def __str__(self):
         return "Element %s of document  %s" % (self.element.element_name,
