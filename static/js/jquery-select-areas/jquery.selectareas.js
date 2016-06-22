@@ -56,8 +56,7 @@ function output_coordinates(action){
       console.log("rec = ", element_rectangle);
 
       var key_name = Object.keys(element_rectangle).filter(function(key) {
-        console.log("key, box id ",key, box_id);
-        return element_rectangle[key] === box_id + "_entry";
+        return element_rectangle[key] === box_id ;
       })[0];
 
       if (key_name == null)
@@ -620,12 +619,14 @@ function map_the_coordinates(real_x, real_y){
         {
             count_selected_areas += 1;
         }
+
         //var count_selected_areas = parseInt(boxes_count) + 1;
 
         //console.log("count " , count_selected_areas);
         localStorage.setItem("boxes_count", count_selected_areas +1); 
         //console.log("storage = ", localStorage.getItem("boxes_count"));
-        count_selected_areas += 1
+        count_selected_areas += 1;
+        element_rectangle["rectangle_box"+count_selected_areas ] = "rectangle_box"+count_selected_areas ;
         $outline = $("<div class=\"select-areas-outline\" id ='rectangle_box" + count_selected_areas + 
          "'  />").css({
                 opacity : options.outlineOpacity,

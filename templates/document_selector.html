@@ -71,6 +71,7 @@
               }
               else{
                   var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === element_id})[0];
+                  element_rectangle[element_id] = element_id;
 
               }
               localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));
@@ -141,6 +142,7 @@
             $("#"+rectangle_box_id).css("border","1px solid red");
 
             //update rectangle_binding, element_rectangle and elements_binding local associative arrays
+            console.log("line 145", value, rectangle_box_id);
             element_rectangle[value] = rectangle_box_id;
             
 
@@ -221,6 +223,7 @@
         for(i =0;i<all_outlines.length;i++)
         {
           var box_id = all_outlines[i].id;
+          console.log("box id = ", box_id);
           //rectangles.push(element_rectangle.getKeyFromValue(box_id));
           
           var width  = $("#" + box_id).width() ;
@@ -233,13 +236,15 @@
           var width_ratio = width/image_width;
           var width  = width/image_width ;
           var height = height/image_height;
-
-          var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === box_id+"_entry"})[0];
+          console.log(element_rectangle);
+          var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === box_id})[0];
           rectangles.push(key_name);
           data[key_name] = {"width":width, "height":height,
             "x" : a_x, "y":a_y};
         }
+        console.log("rectangles === ", rectangles);
         data["elements"] = rectangles;
+        console.log("Element RECT == ", element_rectangle);
         console.log(data);       
         
         data = JSON.stringify(data);

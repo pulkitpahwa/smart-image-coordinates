@@ -117,6 +117,7 @@ def particular_document(request, unique_id):
             document.image_resolution_x = data["image_height"]
             document.save()
         template = document.template_format
+        print data
 
         for element_name in data["elements"]:
             print element_name
