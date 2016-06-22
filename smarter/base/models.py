@@ -97,8 +97,8 @@ class ExtractedElements(models.Model):
     """
     document = models.ForeignKey(Document)
     element = models.ForeignKey(TemplateElement)
-    x1_coordinate = models.FloatField()
-    y1_coordinate = models.FloatField()
+    x1_coordinate = models.FloatField(blank = True, null = True)
+    y1_coordinate = models.FloatField(blank = True, null = True)
     x2_coordinate = models.FloatField(blank = True, null = True)
     y2_coordinate = models.FloatField(blank = True, null = True)
     block_height = models.FloatField(blank = True, null = True)

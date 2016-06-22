@@ -117,16 +117,19 @@ def particular_document(request, unique_id):
             document.image_resolution_x = data["image_height"]
             document.save()
         template = document.template_format
+
         for element_name in data["elements"]:
             element = TemplateElement.objects.get_or_create(
                     template=template, element_name=element_name )[0]
-            ExtractedElements.objects.create(document = document,
-                            element = element,
-                            x1_coordinate=data[element_name]["x"],
-                            y1_coordinate=data[element_name]["y"],
-                            block_width=data[element_name]["width"],
-                            block_height=data[element_name]["height"]
-                    )
+
+            extracted_element = ExtractedElements.objects.get_or_create(
+                    document = document, element = element )[0]
+
+            extracted_element.x1_coordinate = data[element_name]["x"]
+            extracted_element.y1_coordinate = data[element_name]["y"]
+            extracted_element.block_width = data[element_name]["width"]
+            extracted_element.block_height = data[element_name]["height"]
+            extracted_element.save()
         # print "\n\n\n\n"
         return JsonResponse({"error":"false","message":"Successfully saved elements"})
 
