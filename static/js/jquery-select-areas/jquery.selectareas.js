@@ -4,23 +4,34 @@
  * @author Catalin Dogaru (https://github.com/cdog - http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-i--net-20994)
  * @author Adrien David-Sivelle (https://github.com/AdrienDS - Refactoring, Multiselections & Mobile compatibility)
  */
+
+//Use the following function to get the keys of object from their values. 
+/*Object.prototype.getKeyFromValue = function( value ) {
+    for( var prop in this ) {
+        if( this.hasOwnProperty( prop ) ) {
+             if( this[ prop ] === value )
+                 return prop;
+        }
+    }
+}
+*/
 function output_coordinates(action){
   $('.panzoom').animate({
     transform: 'scale(1) rotate(0deg)'
   });
   var elements_used = JSON.parse(localStorage.getItem("elements_used"));
   var elements_available = JSON.parse(localStorage.getItem("elements_available"));
-  var elements_binding = JSON.parse(localStorage.getItem("elements_bining"));
-  var rectangle_binding = JSON.parse(localStorage.getItem("rectangle_binding"));
   var element_rectangle = JSON.parse(localStorage.getItem("element_rectangle"));
+  
   var all_outlines = $(".select-areas-outline");
   var image_width = $("#example").width();
   var image_height = $("#example").height();
-  //console.log("elements_binding = ", elements_binding);
+  var rectangles =  [];
 
   $("#output").html("");
   $("#output").append("<tr><th>Object</th><th>A</th><th>Width</th><th>Height</th></tr>");
-  var rectangles =  [];
+  
+  //get resolution of image
   var image = $("img#example")[0];
   var image_resolution_x = image.naturalWidth;
   var image_resolution_y = image.naturalHeight;            
@@ -28,81 +39,77 @@ function output_coordinates(action){
   for(i =0;i<all_outlines.length;i++)
   {
       var box_id = all_outlines[i].id;
-      rectangles.push(box_id)
+      rectangles.push(box_id);
 
       var width  = $("#" + box_id).width();
       var height = $("#"+box_id).height();
-      //console.log(all_outlines[i].id);
-/*      var a_x = $("#"+box_id).position().left;
-      var a_y = $("#"+box_id).position().top;        
-      var c_x = ($("#"+box_id).position().left + width);
-      var c_y = ($("#"+box_id).position().top + height);        
-*/      var a_x = $("#"+box_id).position().left*image_resolution_x/image_width;
-      var a_y = $("#"+box_id).position().top*image_resolution_y/image_height;        
-      var c_x = ($("#"+box_id).position().left + width)/image_width;
-      var c_y = ($("#"+box_id).position().top + height)/image_height;        
+
+      var a_x = Math.round($("#"+box_id).position().left*image_resolution_x / image_width);
+      var a_y = Math.round($("#"+box_id).position().top*image_resolution_y / image_height);        
+      //var c_x = ($("#"+box_id).position().left + width) / image_width;
+      //var c_y = ($("#"+box_id).position().top + height) / image_height;        
 
       var height_ratio = height/image_height;
       var width_ratio = width/image_width;
-      var width  = width_ratio * image_resolution_x;
-      var height = height_ratio * image_resolution_y ;
+      var width  = Math.round(width_ratio * image_resolution_x);
+      var height = Math.round(height_ratio * image_resolution_y );
+      console.log("rec = ", element_rectangle);
 
-      $("#output").append("<tr><td>"+ rectangle_binding[box_id] + "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+      var key_name = Object.keys(element_rectangle).filter(function(key) {
+        console.log("key, box id ",key, box_id);
+        return element_rectangle[key] === box_id + "_entry";
+      })[0];
+
+      if (key_name == null)
+      {
+          $("#output").append("<tr><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + box_id+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+      }
+      else{
+          $("#output").append("<tr><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + key_name+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+
+      }
+      console.log("key name = ", key_name);
   
   }
+
   function update_elements_tables(array_name, id){
-    //console.log("element  = ", array_name);
     var all_options = "<option value='----'>-----</option> ";
     $.each(array_name, function(key, value){
-        //console.log("key, value = ", key, value, id);
-        if (id == "elements_available")
-        {
-            var option_string = "<option value='" + key  + "'>" + value + "</option> " ;
-        }
-        else{
-           var option_string = "<option value='" + value  + "'>" + key + "</option> " ;
-        }
+        var option_string = "<option value='" + value  + "'>" + value + "</option> " ;
         all_options += option_string ;
         $("#"+ id).html(all_options);
-        //console.log(array_name);
     });
   }  
 
   if (action == "delete")
   {     
-        $.each(rectangle_binding, function(key, value){
-            //console.log(key, value);
-            if ($.inArray(key, rectangles) == -1){
-                var element_name = rectangle_binding[key];
-                var element_id = elements_used[element_name];
-              //  console.log("deleting " , elements_used[element_name], element_name);
-                delete elements_used[element_name];
-                elements_available[element_id] = element_name ;
-                //console.log("elements_available = " , elements_available[element_id], element_name);
+        /*
+            for every ( key, value ) in rectangle_binding, 
+            if the key is not in rectangles array, get element name for the key 
+            pop the element_name from elements_used and add element_name in elements_available
+        */
+        $.each(element_rectangle, function(key, value){
+            //element_rectangle = {"element_name" : "rectangle_box"}
+            //rectangles = ["rectangle_box1", "rectangle_box2" ]
+            if ($.inArray(value, rectangles) == -1){
+                var element_name  = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === value})[0]
+                //var element_name = element_rectangle.getKeyFromValue(value);                
+                var index = elements_used.indexOf(element_name);
+                elements_used.splice(index, 1);
+                elements_available.push( element_name ) ;
             }
         });
-        
-//        console.log("elements_available = ", elements_available);
-//        console.log("elements used = ", elements_used);
 
-//        update_elements_tables(elements_used, "elements_used");
         update_elements_tables(elements_available, "elements_available");
-//        console.log("elements_available = ", elements_available);
-//        console.log("elements used = ", elements_used);
+        update_elements_tables(elements_used, "elements_used");
+      
         localStorage.setItem("elements_available", JSON.stringify(elements_available));
         localStorage.setItem("elements_used", JSON.stringify(elements_used));
-        localStorage.setItem("elements_binding", JSON.stringify(elements_binding))    ;
-        localStorage.setItem("rectangle_binding", JSON.stringify(rectangle_binding));
         localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));         
   }
-  else{
-
-        //    $("#"+ id).html(all_options);
-            //console.log(array_name);
-        
+  else{        
         update_elements_tables(elements_used, "elements_used");
         update_elements_tables(elements_available, "elements_available");
-
   }
 }
 function map_the_coordinates(real_x, real_y){
@@ -139,8 +146,6 @@ function map_the_coordinates(real_x, real_y){
 (function($) {
     //console.log("parent = ",$(this).parent());
     $.imageArea = function(parent, id) {
-        //console.log("parent += ",parent);
-        //console.log("line 80");
         var options = parent.options,
             $image = parent.$image,
             $trigger = parent.$trigger,
@@ -558,13 +563,8 @@ function map_the_coordinates(real_x, real_y){
                 fireEvent("changed");
 
                 refresh("releaseSelection");
-//                console.log("width of area = " + area.width);
-//                console.log("height of area = "+area.height);
-                
-                output_coordinates("");
-                
-//                $("#output").append("<tr><td>" + area.x + "</td><td> " + area.y  + "</td></tr>");
-//                console.log("x = " + area.x + "\ny = " + area.y);
+            output_coordinates("");
+                    
             },
             deleteSelection = function (event) {
                 cancelEvent(event);
@@ -588,7 +588,6 @@ function map_the_coordinates(real_x, real_y){
                 return [offset.left, offset.top];
             },
             getMousePosition = function (event) {
-                //console.log("getMousePosition called");            
                 var imageOffset = getElementOffset($image);
 
                 if (! event.pageX) {
@@ -605,23 +604,29 @@ function map_the_coordinates(real_x, real_y){
                     }
                 }
                 
-                //check here for the problem of focal point
                 var x = event.pageX,
                     y = event.pageY;
                     
                 return map_the_coordinates(x,y);
-
-//                x =  x;
                 y =  y;
-
-//                return [x, y];
             };
 
 
         // Initialize an outline layer and place it above the trigger layer
-        var count_select_areas = $(".select-areas-outline").length + 1;
+        console.log("storage = ", localStorage.getItem("boxes_count"));
+        var count_selected_areas = parseInt(localStorage.getItem("boxes_count"));
+        console.log("boxes count = ", boxes_count);
+        if(count_selected_areas == 0 && $(".select-areas-outline").length == 1)
+        {
+            count_selected_areas += 1;
+        }
+        //var count_selected_areas = parseInt(boxes_count) + 1;
 
-        $outline = $("<div class=\"select-areas-outline\" id ='rectangle_box" + count_select_areas + 
+        //console.log("count " , count_selected_areas);
+        localStorage.setItem("boxes_count", count_selected_areas +1); 
+        //console.log("storage = ", localStorage.getItem("boxes_count"));
+        count_selected_areas += 1
+        $outline = $("<div class=\"select-areas-outline\" id ='rectangle_box" + count_selected_areas + 
          "'  />").css({
                 opacity : options.outlineOpacity,
                 position : "absolute"
@@ -660,7 +665,7 @@ function map_the_coordinates(real_x, real_y){
                     .bind("tap", deleteSelection);
                 return $obj;
             };
-            $btDelete = bindToDelete($("<div class=\"delete-area\" id = 'delete_button" + count_select_areas+ "'/>"))
+            $btDelete = bindToDelete($("<div class=\"delete-area\" id = 'delete_button" + count_selected_areas+ "'/>"))
                 .append(bindToDelete($("<div class=\"select-areas-delete-area\" />")))
                 .insertAfter($selection);
         }
@@ -709,7 +714,6 @@ function map_the_coordinates(real_x, real_y){
             }
         };
     };
-
 
     $.imageSelectAreas = function() { };
 
@@ -962,7 +966,6 @@ function map_the_coordinates(real_x, real_y){
     };
 
     $.selectAreas = function(object, options) {
-        //console.log("line 900");
         var $object = $(object);
         if (! $object.data("mainImageSelectAreas")) {
             //console.log("line 903");

@@ -119,6 +119,7 @@ def particular_document(request, unique_id):
         template = document.template_format
 
         for element_name in data["elements"]:
+            print element_name
             element = TemplateElement.objects.get_or_create(
                     template=template, element_name=element_name )[0]
 
