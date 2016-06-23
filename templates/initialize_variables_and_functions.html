@@ -1,0 +1,56 @@
+<script type = "text/javascript" >
+
+  //initialise elements_available from the elements that exist for the 
+  //template of given document
+  var elements_available =  [  {%for element in elements%} "{{element.element_name}}" {%if not forloop.last%},{%endif%} {%endfor%}     ];
+  //initialise other variables
+  var elements_used = [];
+  var element_rectangle = {};
+  var boxes_count = 0;
+//      localStorage.setItem("boxes_count", boxes_count);  
+
+  function create_rectangle_selection(x, y, width, height)
+  {
+    /*
+        function to create rectangular selection
+    */
+
+    var areaOptions = {
+        x: x,
+        y: y,
+        width: width,
+        height: height,
+    };
+    //call the function to initialise the rectangle_box with areaOptions
+    $('img#example').selectAreas('add', areaOptions);   
+  }
+
+  //set variables to local storage  
+  function update_local_storage_variables(elements_available, elements_used, element_rectangle, boxes_count)
+  {
+    localStorage.setItem("elements_available", JSON.stringify(elements_available));
+    localStorage.setItem("elements_used", JSON.stringify(elements_used));
+    localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));
+    localStorage.setItem("boxes_count", boxes_count);
+  }
+  
+  //function to update_elements of dropdown select box
+  function update_elements_tables(array_name, id){
+      var all_options = "<option value='----'>-----</option> ";            
+      $.each(array_name, function(key, value){
+        var option_string = "<option value='" + value  + "'>" + value + "</option> " ;
+        all_options += option_string ;
+      });
+      $("#"+ id).html(all_options);
+  }
+  
+  //autocomplete : autosuggest
+  function autosuggest(element_available){
+    $( "#variable_name" ).autocomplete({
+      source: elements_available
+    });    
+  }
+
+
+
+</script>
