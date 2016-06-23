@@ -31,6 +31,10 @@ urlpatterns = [
     url(r'^upload-document$', base_views.upload_document, name='upload_document'),
     url(r'^document/(?P<unique_id>[-\w]+)$', base_views.particular_document, 
         name='particular_document'),
+    url(r'^preview/(?P<unique_id>[-\w]+)$', base_views.document_preview, 
+        name='preview_document'),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve', 
-        {'document_root': settings.MEDIA_ROOT})
+        {'document_root': settings.MEDIA_ROOT}),
+    url(r'^document/(?P<unique_id>[-\w]+)/(?P<element>[-\w]+)$', base_views.get_element_coordinates,
+        name='get_element_coordinates'),
 ]+ static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)

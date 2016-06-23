@@ -2,6 +2,8 @@
 
   //initialise elements_available from the elements that exist for the 
   //template of given document
+  
+
   var elements_available =  [  {%for element in elements%} "{{element.element_name}}" {%if not forloop.last%},{%endif%} {%endfor%}     ];
   //initialise other variables
   var elements_used = [];
@@ -50,7 +52,5 @@
       source: elements_available
     });    
   }
-
-
 
 </script>

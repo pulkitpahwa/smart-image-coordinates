@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Avg
 
 from .models import (Category,
                     TemplateFormat,
@@ -120,7 +121,6 @@ def particular_document(request, unique_id):
         print data
 
         for element_name in data["elements"]:
-            print element_name
             element = TemplateElement.objects.get_or_create(
                     template=template, element_name=element_name )[0]
 
@@ -144,10 +144,31 @@ def all_documents(request):
                                   context_instance=RequestContext(request))
 
 
-def document_elements(request, unique_id):
+def document_preview(request, unique_id):
     document = get_object_or_404(Document, id=unique_id)
     return render_to_response("document_elements.html",
                               {"document": document},
                               context_instance=RequestContext(request))
 
 
+def get_element_coordinates(request, unique_id, element):
+    try : 
+        document = Document.objects.get(id = unique_id)
+    except Document.DoesNotExist:
+        return JsonResponse({"error": "true", 
+            "message": "Document Does not exist"})
+    template = document.template_format
+    try : 
+        element = TemplateElement.objects.get(template=template,
+                                              element_name__iexact=element)
+    except TemplateElement.DoesNotExist:
+        return JsonResponse({"error": "true", 
+                            "message":"Element Does not exist"})
+
+    avg_x = ExtractedElements.objects.filter(element = element).aggregate(Avg('x1_coordinate'))
+    avg_y = ExtractedElements.objects.filter(element = element).aggregate(Avg('y1_coordinate'))
+    avg_height = ExtractedElements.objects.filter(element = element).aggregate(Avg('block_height'))
+    avg_width = ExtractedElements.objects.filter(element = element).aggregate(Avg('block_width'))
+
+    return JsonResponse({"error":"false", "x": avg_x, "y": avg_y,
+                        "height": avg_height, "width": avg_width })

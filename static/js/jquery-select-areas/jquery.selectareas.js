@@ -19,6 +19,9 @@ function output_coordinates(action){
   $('.panzoom').animate({
     transform: 'scale(1) rotate(0deg)'
   });
+  $('.panzoom').css({
+    "transform": 'scale(1) rotate(0deg)'
+  });
   var elements_used = JSON.parse(localStorage.getItem("elements_used"));
   var elements_available = JSON.parse(localStorage.getItem("elements_available"));
   var element_rectangle = JSON.parse(localStorage.getItem("element_rectangle"));
@@ -54,9 +57,10 @@ function output_coordinates(action){
       var width  = Math.round(width_ratio * image_resolution_x);
       var height = Math.round(height_ratio * image_resolution_y );
       console.log("rec = ", element_rectangle);
+      console.log("bxes = ", localStorage.getItem("boxes_count"));
 
       var key_name = Object.keys(element_rectangle).filter(function(key) {
-        return element_rectangle[key] === box_id + "_entry";
+        return element_rectangle[key] === box_id ;
       })[0];
 
       if (key_name == null)
@@ -67,7 +71,7 @@ function output_coordinates(action){
           $("#output").append("<tr id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + key_name+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
 
       }
-      console.log("key name = ", key_name);
+      //console.log("key name = ", key_name);
   
   }
 
@@ -615,11 +619,17 @@ function map_the_coordinates(real_x, real_y){
         console.log("storage = ", localStorage.getItem("boxes_count"));
         var count_selected_areas = parseInt(localStorage.getItem("boxes_count"));
         console.log("boxes count = ", boxes_count);
+        console.log("select areas =",$(".select-areas-outline").length);
+
         if(count_selected_areas == 0 && $(".select-areas-outline").length == 1)
         {
             count_selected_areas += 1;
+            console.log("create");
         }
-
+        if(count_selected_areas == 0 )
+        {
+                    //do something here
+        }
         //var count_selected_areas = parseInt(boxes_count) + 1;
 
         //console.log("count " , count_selected_areas);
