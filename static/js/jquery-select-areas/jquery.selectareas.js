@@ -56,7 +56,7 @@ function output_coordinates(action){
       console.log("rec = ", element_rectangle);
 
       var key_name = Object.keys(element_rectangle).filter(function(key) {
-        return element_rectangle[key] === box_id ;
+        return element_rectangle[key] === box_id + "_entry";
       })[0];
 
       if (key_name == null)
@@ -635,7 +635,9 @@ function map_the_coordinates(real_x, real_y){
             .insertAfter($trigger);
 
         // Initialize a selection layer and place it above the outline layer
+        var selection_id = "rectangle_box" + count_selected_areas.toString() +  "_ent"
         $selection = $("<div />")
+            .attr("id", "rectangle_box" + count_selected_areas  + "_ent")
             .addClass("select-areas-background-area")
             .css({
                 background : "#fff url(" + $image.attr("src") + ") no-repeat",

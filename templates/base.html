@@ -11,6 +11,29 @@
       .errorlist{
         color:red;
       }
+      ul.links{
+          list-style:none;
+          display:inline;
+      }
+      ul.links > li{
+          display:inline;
+          float:left;
+          margin-left:30px;
+          background-color:#337ab7;
+          color:white;
+          border-color:#2e6da4;
+          line-height:1.42857143;
+          text-align:center;
+          border-radius:4px;
+          border:1px solid transparent;
+          padding:6px 12px;
+      }
+      ul.links > li > a{
+          color:white
+      }
+      #ui-id-1{
+        z-index:2000;
+      }
     </style>
     {%block head%}{%endblock%}
 </head>
@@ -18,5 +41,11 @@
 {%block main_block%} 
 
 {%endblock%}
+<div class="col-sm-12 col-xs-12 col-md-6 col lg-6 col-md-offset-3 col-lg-offset-3">
+    <ul class = "links">
+        <li><a href="{%url 'create-category'%}">Add New Category</a></li>
+        <li><a href="{%url 'create-template'%}">Add New Format</a></li>
+    </ul>
+</div>
 </body>
 </html>

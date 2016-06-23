@@ -1,35 +1,27 @@
 {%extends "base.html"%}
 {%block head%}
   <title>Demo Select Areas</title>
-  {%load static from staticfiles%}
-  <link href="{%static 'css/example.css' %}" media="screen" rel="stylesheet" type="text/css" />
-  <link href="{%static 'css/jquery-select-areas/jquery.selectareas.css' %}" media="screen" rel="stylesheet" type="text/css" />
-  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
-   <!--[if lte IE 8]>
-      <link href="css/jquery-select-areas/jquery.selectareas.ie8.css" media="screen" rel="stylesheet" type="text/css" /> 
-   <![endif]-->
   <script type = "text/javascript" >
-  
         //initialise elements_available from the elements that exist for the 
         //template of given document
-        
         var elements_available =  [  {%for element in elements%} "{{element.element_name}}" {%if not forloop.last%},{%endif%} {%endfor%}     ];
         //initialise other variables
         var elements_used = [];
         var element_rectangle = {};
         var boxes_count = 0;
-        localStorage.setItem("boxes_count", boxes_count);
-
-        
+        localStorage.setItem("boxes_count", boxes_count);    
   </script>
-  <script type = "text/javascript" src = "{%static 'js/base.js' %}"></script>
-  <script type = "text/javascript" src = "{%static 'bootstrap/js/bootstrap.min.js' %}"></script>
-  <script type = "text/javascript" src = "{%static 'js/jquery-panzoom/jquery.panzoom.js' %}"></script>
+
+  {%include "document_selector_static_files.html" %}
   
-  <script type = "text/javascript" src = "{%static 'js/jquery-select-areas/jquery.selectareas.js' %}"></script>
   <script type = "text/javascript" >
     $(document).ready(function(){
-          
+      $(document.body).on("click",".select-areas-background-area", function(event){
+        var box_id = $(this).attr("id");
+        console.log(" selected " + box_id);
+        $("#" + box_id + "ry").css("background-color", "red");
+
+      })
         //create the first rectangle_box
         var areaOptions = {
                 x: Math.floor((Math.random() * 200)),
@@ -37,49 +29,36 @@
                 width: Math.floor((Math.random() * 100)) + 50,
                 height: Math.floor((Math.random() * 100)) + 20,
             };
-
-
-            //call the function to initialise the rectangle_box with areaOptions
+        //call the function to initialise the rectangle_box with areaOptions
         $('img#example').selectAreas('add', areaOptions);
-/*
-        $(function(){
-            $('body').on('click', '.rectangle_entry', function () {
-                jQuery(".rectangle_entry").lazy({});
-                alert('ddsda');
-            });
-        });
-  */      
-        
-        $(document.body).on("click", '.rectangle_entry',
-          function(event){
-            var element_id = $(this).attr("id");
-            //console.log(element_id);
-            //console.log($("#"+element_id).html());
-            var element_new_name = prompt("Enter Element New Name");
-            console.log(element_new_name);
-            if (element_new_name == null)
-            {
-
-            }
+        $("#save_element").click(function(){
+            var element_id = $("#variable_id").val();
+            var element_new_name = $("#variable_name").val();
+            console.log("new name  = ",element_new_name);
+            if (element_new_name == null){}
             else{
               $("#"+element_id).html(element_new_name);
               console.log("Element Re");
               if(key_name == null)
               {
                   element_rectangle[element_new_name] = element_id;
-
               }
               else{
                   var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === element_id})[0];
                   element_rectangle[element_id] = element_id;
-
               }
+               $("#myModal").modal('hide');
               localStorage.setItem("element_rectangle", JSON.stringify(element_rectangle));
-
               console.log("rectangle = ", element_rectangle);            //console.log(element_new_name);
             }
         });
-        
+
+        $(document.body).on("click", '.rectangle_entry', 
+          function(event){
+            var element_id = $(this).attr("id");              
+            $("#variable_id").val(element_id);
+            $('#myModal').modal('show');
+          });
         //set variables to local storage
         localStorage.setItem("elements_available", JSON.stringify(elements_available));
         localStorage.setItem("elements_used", JSON.stringify(elements_used));
@@ -160,6 +139,9 @@
             //output the co-ordinates on right hand side 
             output_coordinates();
         });
+        $( "#variable_name" ).autocomplete({
+          source: elements_available
+        });
 
         
     });
@@ -182,7 +164,6 @@
             var delta = e.delta || e.originalEvent.wheelDelta;
             var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
             zoom_level += 1;
-//            console.log(zoom_level);
             $panzoom.panzoom('zoom', zoomOut, {
               increment: 0.1,
               focal: e, 
@@ -200,6 +181,31 @@
        <table class="table table-striped" class = "output" id = "output">
        </table>
        <button type = "button" class = "btn btn-primary" id = "submit">Save Selection</button>
+   </div>
+   <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">Update Element Name</h4>
+        </div>
+        <div class="modal-body" style = "height:150px;">
+          <input type = "hidden" name = "variable_id" id = "variable_id" class = "form-control">
+
+          <p>
+            <label for="variable_name">Enter Category Name:</label>
+            <input type = "text" name = "variable_name" id = "variable_name" class = "form-control">
+          </p>
+          <p>
+            <button type = "button"  class = "btn btn-primary col-sm-4" id = "save_element">Update Element Name
+            </button>
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
    </div>
    
    <script type = "text/javascript">
@@ -237,7 +243,7 @@
           var width  = width/image_width ;
           var height = height/image_height;
           console.log(element_rectangle);
-          var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === box_id})[0];
+          var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === box_id+"_entry"})[0];
           rectangles.push(key_name);
           data[key_name] = {"width":width, "height":height,
             "x" : a_x, "y":a_y};
