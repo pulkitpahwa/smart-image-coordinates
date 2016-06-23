@@ -61,10 +61,10 @@ function output_coordinates(action){
 
       if (key_name == null)
       {
-          $("#output").append("<tr><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + box_id+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+          $("#output").append("<tr id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + box_id+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
       }
       else{
-          $("#output").append("<tr><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + key_name+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+          $("#output").append("<tr id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + key_name+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
 
       }
       console.log("key name = ", key_name);
