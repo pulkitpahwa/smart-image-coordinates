@@ -1,27 +1,29 @@
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect
 from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Avg
+from django.db import IntegrityError
 
 from .models import (Category,
-                    TemplateFormat,
-                    TemplateElement,
-                    Document,
-                    ExtractedElements)
+                     TemplateFormat,
+                     TemplateElement,
+                     Document,
+                     ExtractedElements)
 
 from .forms import CreateCategoryForm, TemplateFormatForm, DocumentForm
 from .serializers import get_templates_for_category
 
 import json
 
+
 def home(request):
     return render_to_response("home.html", {},
-                             context_instance=RequestContext(request))
+                              context_instance=RequestContext(request))
 
 
-def get_all_template_formats(request, category):
+def get_all_formats(request, category):
     try:
         category = Category.objects.get(slug=category)
     except Category.DoesNotExist:
@@ -42,12 +44,18 @@ def create_category(request):
     elif request.method == "POST":
         form = CreateCategoryForm(data=request.POST)
         if not form.is_valid():
-            return render_to_response("create_category.mhtml",
-                                     {"form": form, "errors": form.errors},
-                                     context_instance=RequestContext(request))
-        category = Category.objects.create(
+            return render_to_response("create_category.html",
+                                      {"form": form, "errors": form.errors},
+                                      context_instance=RequestContext(request))
+        try:
+            Category.objects.create(
                         category_name=form.cleaned_data['category_name'],
                         description=form.cleaned_data['description'])
+        except IntegrityError:
+            message = "Category with the same name already exist"
+            return render_to_response("create_category.html",
+                                      {"form": form, "errors": message},
+                                      context_instance=RequestContext(request))
         return HttpResponseRedirect(reverse('create-template'))
 
 
@@ -61,15 +69,21 @@ def create_template_format(request):
         form = TemplateFormatForm(data=request.POST)
         if not form.is_valid():
             return render_to_response("create_format.html",
-                                     {"form": form, "errors": form.errors},
-                                     context_instance=RequestContext(request))
+                                      {"form": form, "errors": form.errors},
+                                      context_instance=RequestContext(request))
 
         category = get_object_or_404(Category,
-                                 slug=form.cleaned_data['category'])
-        template = TemplateFormat.objects.create(
-                category=category,
-                template_name=form.cleaned_data['template_name']
-                )
+                                     slug=form.cleaned_data['category'])
+        try:
+            TemplateFormat.objects.create(
+                   category=category,
+                   template_name=form.cleaned_data['template_name']
+                   )
+        except IntegrityError:
+            message = "Template Name Already exist"
+            return render_to_response("create_format.html",
+                                      {"form": form, "errors": message},
+                                      context_instance=RequestContext(request))
         return HttpResponseRedirect(reverse("upload_document"))
 
 
@@ -82,7 +96,6 @@ def upload_document(request):
     elif request.method == "POST":
         form = DocumentForm(request.POST, request.FILES)
         if not form.is_valid():
-            print request.FILES['document']
             return render_to_response("upload_document.html",
                                       {"form": form, "errors": form.errors},
                                       context_instance=RequestContext(request))
@@ -94,8 +107,10 @@ def upload_document(request):
                 document_name=form.cleaned_data['document_name'],
                 document=request.FILES['document']
         )
-        return HttpResponseRedirect(reverse('particular_document',
-            kwargs={"unique_id":document.id}))
+        return HttpResponseRedirect(
+                reverse('particular_document',
+                        kwargs={"unique_id": document.id}
+                        ))
 
 
 @csrf_exempt
@@ -105,35 +120,33 @@ def particular_document(request, unique_id):
     if request.method == "GET":
         return render_to_response('document_selector.html',
                                   {"document": document,
-                                  "elements": all_elements},
+                                   "elements": all_elements},
                                   context_instance=RequestContext(request))
 
     elif request.method == "POST":
-        # print "\n\n\nhello \n\n\n\n"
-        data = json.loads(json.loads( request.POST['data'] ))
-        if document.image_resolution_x and document.image_resolution_y :
+        data = json.loads(json.loads(request.POST['data']))
+        if document.image_resolution_x and document.image_resolution_y:
             pass
-        else :
+        else:
             document.image_resolution_x = data["image_width"]
             document.image_resolution_x = data["image_height"]
             document.save()
         template = document.template_format
-        print data
 
         for element_name in data["elements"]:
             element = TemplateElement.objects.get_or_create(
-                    template=template, element_name=element_name )[0]
+                    template=template, element_name=element_name)[0]
 
             extracted_element = ExtractedElements.objects.get_or_create(
-                    document = document, element = element )[0]
+                    document=document, element=element)[0]
 
             extracted_element.x1_coordinate = data[element_name]["x"]
             extracted_element.y1_coordinate = data[element_name]["y"]
             extracted_element.block_width = data[element_name]["width"]
             extracted_element.block_height = data[element_name]["height"]
             extracted_element.save()
-        # print "\n\n\n\n"
-        return JsonResponse({"error":"false","message":"Successfully saved elements"})
+        return JsonResponse({"error": "false",
+                            "message": "Successfully saved elements"})
 
 
 def all_documents(request):
@@ -152,23 +165,29 @@ def document_preview(request, unique_id):
 
 
 def get_element_coordinates(request, unique_id, element):
-    try : 
-        document = Document.objects.get(id = unique_id)
+    try:
+        document = Document.objects.get(id=unique_id)
     except Document.DoesNotExist:
-        return JsonResponse({"error": "true", 
-            "message": "Document Does not exist"})
+        return JsonResponse({
+            "error": "true",
+            "message": "Document Does not exist"
+            })
     template = document.template_format
-    try : 
+    try:
         element = TemplateElement.objects.get(template=template,
                                               element_name__iexact=element)
     except TemplateElement.DoesNotExist:
-        return JsonResponse({"error": "true", 
-                            "message":"Element Does not exist"})
+        return JsonResponse({"error": "true",
+                            "message": "Element Does not exist"})
 
-    avg_x = ExtractedElements.objects.filter(element = element).aggregate(Avg('x1_coordinate'))
-    avg_y = ExtractedElements.objects.filter(element = element).aggregate(Avg('y1_coordinate'))
-    avg_height = ExtractedElements.objects.filter(element = element).aggregate(Avg('block_height'))
-    avg_width = ExtractedElements.objects.filter(element = element).aggregate(Avg('block_width'))
+    avg_x = ExtractedElements.objects.filter(
+                    element=element).aggregate(Avg('x1_coordinate'))
+    avg_y = ExtractedElements.objects.filter(
+                    element=element).aggregate(Avg('y1_coordinate'))
+    avg_height = ExtractedElements.objects.filter(
+                    element=element).aggregate(Avg('block_height'))
+    avg_width = ExtractedElements.objects.filter(
+                    element=element).aggregate(Avg('block_width'))
 
-    return JsonResponse({"error":"false", "x": avg_x, "y": avg_y,
-                        "height": avg_height, "width": avg_width })
+    return JsonResponse({"error": "false", "x": avg_x, "y": avg_y,
+                        "height": avg_height, "width": avg_width})

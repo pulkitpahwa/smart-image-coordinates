@@ -11,7 +11,8 @@ class Category(models.Model):
     List of categories a.k.a. Projects.
     """
     category_name = models.CharField(max_length=255,
-            verbose_name="Name of the Category", unique=True)
+                                     verbose_name="Name of the Category",
+                                     unique=True)
     description = models.TextField(default="", blank=True)
     slug = AutoSlugField(populate_from="category_name", unique=True)
 
@@ -24,9 +25,10 @@ class TemplateFormat(models.Model):
     List of template formats. e.g. Bill for CCD, Barista, etc.
     """
     category = models.ForeignKey(Category,
-            verbose_name="Category of the Format")
+                                 verbose_name="Category of the Format")
     template_name = models.CharField(max_length=225,
-            verbose_name="Name of template format", unique=True)
+                                     verbose_name="Name of template format",
+                                     unique=True)
     slug = AutoSlugField(populate_from="template_name", unique=True)
 
     def __str__(self):
@@ -38,9 +40,9 @@ class TemplateElement(models.Model):
     List of elements for a given template type
     """
     template = models.ForeignKey(TemplateFormat,
-            verbose_name="Base Format of the element")
+                                 verbose_name="Base Format of the element")
     element_name = models.CharField(max_length=255,
-            verbose_name="Name of the Element")
+                                    verbose_name="Name of the Element")
 
     def __str__(self):
         return self.element_name
@@ -61,16 +63,17 @@ class Document(models.Model):
     """
     Document whose elements are to be extracted
     """
-    id  = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True,
+                          default=uuid.uuid4, editable=False)
     template_format = models.ForeignKey(TemplateFormat)
     document_name = models.CharField(max_length=255,
-            verbose_name='name of document')
+                                     verbose_name='name of document')
     document = models.FileField(upload_to="documents")
     element = models.ManyToManyField(TemplateElement,
-            through='ExtractedElements')
+                                     through='ExtractedElements')
     slug = AutoSlugField(populate_from="document_name", unique=True)
-    image_resolution_x  = models.IntegerField(blank = True, null = True)
-    image_resolution_y = models.IntegerField(blank = True, null = True)
+    image_resolution_x = models.IntegerField(blank=True, null=True)
+    image_resolution_y = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.document_name
@@ -97,13 +100,13 @@ class ExtractedElements(models.Model):
     """
     document = models.ForeignKey(Document)
     element = models.ForeignKey(TemplateElement)
-    x1_coordinate = models.FloatField(blank = True, null = True)
-    y1_coordinate = models.FloatField(blank = True, null = True)
-    x2_coordinate = models.FloatField(blank = True, null = True)
-    y2_coordinate = models.FloatField(blank = True, null = True)
-    block_height = models.FloatField(blank = True, null = True)
-    block_width = models.FloatField(blank = True, null = True)
+    x1_coordinate = models.FloatField(blank=True, null=True)
+    y1_coordinate = models.FloatField(blank=True, null=True)
+    x2_coordinate = models.FloatField(blank=True, null=True)
+    y2_coordinate = models.FloatField(blank=True, null=True)
+    block_height = models.FloatField(blank=True, null=True)
+    block_width = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return "Element %s of document  %s" % (self.element.element_name,
-                self.document.document_name)
+                                               self.document.document_name)

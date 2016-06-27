@@ -8,14 +8,17 @@ if "test" in sys.argv:
     print "Testing"
     sys.exit(0)
 
-from .common import * # noqa 
+
+from .common import *  # noqa
+
 
 try:
-    from .dev import * # noqa
+    from .dev import *  # noqa
 except ImportError:
     pass
 
+
 try:
-    from .prod import * # noqa
+    from .prod import *  # noqa
 except ImportError:
     pass

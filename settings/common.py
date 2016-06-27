@@ -6,7 +6,7 @@ import os
 from os.path import dirname, join
 
 # Third Party Stuff
-from django.conf.global_settings import * # noqa
+from django.conf.global_settings import *  # noqa
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 ROOT_DIR = dirname(dirname(__file__))
@@ -122,9 +122,9 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-STATIC_ROOT = join(ROOT_DIR, 'staticfiles') 
+STATIC_ROOT = join(ROOT_DIR, 'staticfiles')
 STATICFILES_DIRS = (
-    join(ROOT_DIR, 'static'),    
+    join(ROOT_DIR, 'static'),
 )
 
 MEDIA_ROOT = join(ROOT_DIR, 'media')
