@@ -75,7 +75,7 @@ def create_template_format(request):
         category = get_object_or_404(Category,
                                      slug=form.cleaned_data['category'])
         try:
-            TemplateFormat.objects.create(
+            template = TemplateFormat.objects.create(
                    category=category,
                    template_name=form.cleaned_data['template_name']
                    )
@@ -84,7 +84,10 @@ def create_template_format(request):
             return render_to_response("create_format.html",
                                       {"form": form, "errors": message},
                                       context_instance=RequestContext(request))
-        return HttpResponseRedirect(reverse("upload_document"))
+        redirect_url = reverse('upload_document')
+        redirect_url += "?categ=%s&format=%s" %(category.slug, 
+                                                 template.slug)
+        return HttpResponseRedirect(redirect_url)
 
 
 def upload_document(request):

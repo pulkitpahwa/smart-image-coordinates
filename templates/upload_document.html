@@ -15,31 +15,53 @@
 </form>
 <script type = "text/javascript">
   $(document).ready(function(){
-    update_template_list();
-     $("#id_category").change(function(){
-         update_template_list();
-     });
+    update_template_list(fresh=true);
+
+    $("#id_category").change(function(){
+        console.log("change");
+        update_template_list();
+    });
   });
-function update_template_list(){
-         var category = $("#id_category").val();
-         console.log("category = "+ category);
-         $.get("/get_template/"+ category, function(data){
-            if(data["error"] == "true")
-            {
-               alert(data["message"]);
-            }
-            else{
-               str = JSON.parse(data["data"]);
-               new_rows = "";
-               for(i=0; i<str.length; i++)
+  function update_template_list(fresh=false){
+     var category = $("#id_category").val();
+     console.log("category = "+ category);
+     $.get("/get_template/"+ category, function(data){
+        if(data["error"] == "true")
+        {
+           alert(data["message"]);
+        }
+        else{
+           console.log("inside el");
+           str = JSON.parse(data["data"]);
+           new_rows = "";
+           for(i=0; i<str.length; i++)
+           {
+               new_row_string = '<option value="' + str[i]["fields"]["slug"] + '">' + 
+                   str[i]["fields"]["template_name"]+'</option>';
+               new_rows += new_row_string;
+           }
+           $("#id_template").html(new_rows);
+           if(fresh!=false)
+           {
+               var search_query = window.location["search"].split("&")
+               var cafe = "";
+               var template_name = "";
+               if (search_query.length == 1 && search_query[0] == "")
                {
-                   new_row_string = '<option value="' + str[i]["fields"]["slug"] + '">' + 
-                       str[i]["fields"]["template_name"]+'</option>';
-                   new_rows += new_row_string;
+               console.log("No search query");
                }
-               $("#id_template").html(new_rows);
-            }
-        });
+               else{
+                console.log("els");
+                category = search_query[0].split("=")[1];
+                template_name = search_query[1].split("=")[1];
+                console.log(cafe, template_name);
+               }
+               $("#id_category").val(category);
+               $("#id_template").val(template_name);
+           
+           }
+        }
+    });
 }
 </script>
 {%endblock%}
