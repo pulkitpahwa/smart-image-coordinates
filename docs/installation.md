@@ -1,13 +1,4 @@
-Image Co-ordinates Extraction 
-=============================
-
-Image Co-ordinates Extraction is a django app that let the users select the areas from different pdfs/images and then
-extract the text from the selected areas.
-
-It is used by : 
- - [Juxt Smart-Mandate](http://juxt-smartmandate.com/)
-
-# Getting Started
+# Installation
 
 It is advised to install all the requirements inside [virtualenv], use [virtualenvwrapper] to manage virtualenvs 
 
@@ -19,4 +10,8 @@ pip install -r requirements.txt
 python manage.py migrate --noinput
 ```
 
+# Running the server 
 
+Start the python server by running `python manage.py runserver` command in the root folder of the project.
+
+Check the server running on [http://localhost:8000/](http://localhost:8000/)

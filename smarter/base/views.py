@@ -19,11 +19,17 @@ import json
 
 
 def home(request):
+    """
+    View for home page. 
+    """
     return render_to_response("home.html", {},
                               context_instance=RequestContext(request))
 
 
 def get_all_formats(request, category):
+    """
+    View to get all template formats that exist for the particular category
+    """
     try:
         category = Category.objects.get(slug=category)
     except Category.DoesNotExist:
@@ -62,6 +68,9 @@ def create_category(request):
 
 
 def create_template_format(request):
+    """
+    View to create new template format.
+    """
     if request.method == "GET":
         form = TemplateFormatForm()
         return render_to_response("create_format.html",
@@ -93,6 +102,9 @@ def create_template_format(request):
 
 
 def upload_document(request):
+    """
+    View for handling document upload
+    """
     if request.method == "GET":
         form = DocumentForm()
         return render_to_response("upload_document.html",
@@ -120,6 +132,10 @@ def upload_document(request):
 
 @csrf_exempt
 def particular_document(request, unique_id):
+    """
+    View to display a particular document and let the end user to select
+    elements from it on the frontend and save them
+    """
     document = get_object_or_404(Document, id=unique_id)
     all_elements = document.template_format.templateelement_set.all()
     if request.method == "GET":
@@ -158,6 +174,9 @@ def particular_document(request, unique_id):
 
 
 def all_documents(request):
+    """
+    View to display all documents
+    """
     documents = Document.objects.all()
     if request.method == "GET":
         return render_to_response("all_documents.html",
@@ -166,13 +185,23 @@ def all_documents(request):
 
 
 def document_preview(request, unique_id):
+    """
+    View to preview/ update a document. Any document for which the elements
+    have been created is eligible for preview/ update
+    """
     document = get_object_or_404(Document, id=unique_id)
+    elements = document.template_format.templateelement_set.all()
     return render_to_response("document_elements.html",
-                              {"document": document},
+                              {"document": document, "elements": elements},
                               context_instance=RequestContext(request))
 
 
 def get_element_coordinates(request, unique_id, element):
+    """
+    Get approx coordinates of a particular element for a given template format
+    Average of all values of the particular element for various documents is
+    considered.  
+    """
     try:
         document = Document.objects.get(id=unique_id)
     except Document.DoesNotExist:
