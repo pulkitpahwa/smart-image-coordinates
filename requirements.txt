@@ -1,4 +1,8 @@
-Django==1.9.7
+Django==1.9.6
 django-autoslug==1.9.3
-gunicorn==19.6.0
+flake8==2.5.4
+gunicorn==19.3.0
+ipython==4.0.0
+pep8==1.7.0
 mkdocs==0.15.3
+
