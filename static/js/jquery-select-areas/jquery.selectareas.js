@@ -56,8 +56,8 @@ function output_coordinates(action){
       var width_ratio = width/image_width;
       var width  = Math.round(width_ratio * image_resolution_x);
       var height = Math.round(height_ratio * image_resolution_y );
-      console.log("rec = ", element_rectangle);
-      console.log("bxes = ", localStorage.getItem("boxes_count"));
+      //console.log("rec = ", element_rectangle);
+      //console.log("bxes = ", localStorage.getItem("boxes_count"));
 
       var key_name = Object.keys(element_rectangle).filter(function(key) {
         return element_rectangle[key] === box_id ;
@@ -65,10 +65,10 @@ function output_coordinates(action){
 
       if (key_name == null)
       {
-          $("#output").append("<tr id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + box_id+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+          $("#output").append("<tr class = 'output_display' id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + box_id+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
       }
       else{
-          $("#output").append("<tr id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + key_name+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
+          $("#output").append("<tr class = 'output_display' id = 'id_" + box_id+ "_ent'><td class = 'rectangle_entry' id = '"+ box_id + "_entry'>" + key_name+ "</td><td>" + a_x + "," + a_y + "</td><td>"  + width  + "</td><td>" +  height + "</td></tr>");
 
       }
       //console.log("key name = ", key_name);
@@ -369,9 +369,14 @@ function map_the_coordinates(real_x, real_y){
                 area.x = selectionOrigin[0];
                 area.y = selectionOrigin[1];
 
+                $(".select-areas-background-area").css("border-color","black");
+
                 refresh("startSelection");
             },
             pickSelection = function (event) {
+                var this_box_id = $(this).attr("id");
+                $(".select-areas-background-area").css("border-color","black");
+                $("#" + this_box_id).css("border","1px solid red");
                 //console.log("pickSelection called");            
                 cancelEvent(event);
                 focus();
@@ -508,7 +513,8 @@ function map_the_coordinates(real_x, real_y){
                 refresh("resizeSelection");
             },
             moveSelection = function (event) {
-                //console.log("moveSelection called");            
+                //console.log("moveSelection called"); 
+
                 cancelEvent(event);
                 if (! options.allowMove) {
                     return;
@@ -616,15 +622,12 @@ function map_the_coordinates(real_x, real_y){
 
 
         // Initialize an outline layer and place it above the trigger layer
-        console.log("storage = ", localStorage.getItem("boxes_count"));
         var count_selected_areas = parseInt(localStorage.getItem("boxes_count"));
-        console.log("boxes count = ", boxes_count);
-        console.log("select areas =",$(".select-areas-outline").length);
-
+ 
         if(count_selected_areas == 0 && $(".select-areas-outline").length == 1)
         {
             count_selected_areas += 1;
-            console.log("create");
+            //console.log("create");
         }
         if(count_selected_areas == 0 )
         {
@@ -670,6 +673,9 @@ function map_the_coordinates(real_x, real_y){
                     .bind("touchstart", pickResizeHandler);
             });
         }
+        $(".select-areas-background-area").css("border-color","black");
+        $("#rectangle_box"+count_selected_areas+"_ent").css("border","1px solid red");
+
         // initialize delete button
         if (options.allowDelete) {
             var bindToDelete = function ($obj) {
