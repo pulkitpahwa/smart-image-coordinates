@@ -11,4 +11,21 @@
 <p>
 <a href="{%url 'create-category'%}">Create New Category</a>
 </p>
+<script>
+$(document).ready(function(){
+	var search_query = window.location["search"].split("&")
+    var category = "";
+    var template_name = "";
+    if (search_query.length == 1 && search_query[0] == "")
+    {
+     console.log("No search query");
+    }
+    else{
+     console.log("els");
+     category = search_query[0].split("=")[1];
+     console.log(category);
+    }
+	$("#id_category").val(category);
+});
+</script>
 {%endblock%}

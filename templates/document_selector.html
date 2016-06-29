@@ -37,9 +37,11 @@
     </section>
    </div>
    <div class = "right" class = "col-sm-12 col-md-6 col-xs-12 col-lg-6">
+   {%if elements.count == 0%} <div style = "display:none"> {%endif%}
        <label for="elements_available">Create new element</label>
        <select id="elements_available" name="" class = "dropdown form-control" style = "">
        </select>
+    {%if elements.count == 0%} </div>{%endif%}
        <select id="elements_used" name="" class = "dropdown form-control" style = "display:none">
        </select>
        <table class="table table-striped" class = "output" id = "output" style = "margin-top:30px">

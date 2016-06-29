@@ -48,7 +48,7 @@ def create_category(request):
                                       {"form": form, "errors": form.errors},
                                       context_instance=RequestContext(request))
         try:
-            Category.objects.create(
+            category = Category.objects.create(
                         category_name=form.cleaned_data['category_name'],
                         description=form.cleaned_data['description'])
         except IntegrityError:
@@ -56,7 +56,9 @@ def create_category(request):
             return render_to_response("create_category.html",
                                       {"form": form, "errors": message},
                                       context_instance=RequestContext(request))
-        return HttpResponseRedirect(reverse('create-template'))
+        redirect_url = reverse('create-template')
+        redirect_url += "?categ=%s" %(category.slug) 
+        return HttpResponseRedirect(redirect_url)
 
 
 def create_template_format(request):
@@ -121,6 +123,9 @@ def particular_document(request, unique_id):
     document = get_object_or_404(Document, id=unique_id)
     all_elements = document.template_format.templateelement_set.all()
     if request.method == "GET":
+        if document.extractedelements_set.all().count() > 0 :
+          return HttpResponseRedirect(reverse('preview_document',
+                                      kwargs={"unique_id":document.id}))
         return render_to_response('document_selector.html',
                                   {"document": document,
                                    "elements": all_elements},
@@ -136,7 +141,7 @@ def particular_document(request, unique_id):
             document.image_resolution_x = data["image_height"]
             document.save()
         template = document.template_format
-
+        document.extractedelements_set.all().delete()
         for element_name in data["elements"]:
             element = TemplateElement.objects.get_or_create(
                     template=template, element_name=element_name)[0]

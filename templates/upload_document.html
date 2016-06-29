@@ -5,8 +5,7 @@
     <center>Upload Document</center>
 </h1>
 <div class="col-sm-12 col-xs-12 col-md-offset-4 col-lg-offset-4 col-lg-4 col-md-4">
-    <p> <a href = "{%url 'create-category'%}"><button class="btn btn-primary pull-left">Create Category</button></a></p>
-    <p style = "margin-top:50px;margin-bottom:50px"><a href = "{%url 'create-template'%}"><button class="btn btn-primary pull-left" >Create Template</button></a></p>
+    
 </div>
 <form class = "form-horizontal col-sm-12 col-md-offset-4 col-lg-4 col-md-offset-4 col-lg-offset-4 col-xs-12" action = "{{request.path}}" method="post" enctype="multipart/form-data" style = "margin-top:50px">
   {%csrf_token%}
@@ -14,15 +13,16 @@
   <input type = "submit" value = "Upload Document" class = "btn btn-primary col-sm-12"/>
 </form>
 <script type = "text/javascript">
-  $(document).ready(function(){
-    update_template_list(fresh=true);
-
     $("#id_category").change(function(){
         console.log("change");
         update_template_list();
     });
+
+  $(document).ready(function(){
+    update_template_list(fresh=true);
+
   });
-  function update_template_list(fresh=false){
+  function update_template_list(fresh=false, template="" ){
      var category = $("#id_category").val();
      console.log("category = "+ category);
      $.get("/get_template/"+ category, function(data){
@@ -44,21 +44,20 @@
            if(fresh!=false)
            {
                var search_query = window.location["search"].split("&")
-               var cafe = "";
+               var category = "";
                var template_name = "";
-               if (search_query.length == 1 && search_query[0] == "")
-               {
-               console.log("No search query");
-               }
+               if (search_query.length == 1 && search_query[0] == ""){}
                else{
-                console.log("els");
                 category = search_query[0].split("=")[1];
                 template_name = search_query[1].split("=")[1];
-                console.log(cafe, template_name);
+                console.log(template_name);
                }
                $("#id_category").val(category);
-               $("#id_template").val(template_name);
-           
+               update_template_list(fresh=false, template=template_name);           
+           }
+           if(template != "")
+           {
+              $("#id_template").val(template);
            }
         }
     });

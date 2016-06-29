@@ -32,7 +32,7 @@ urlpatterns = [
         name='upload_document'),
     url(r'^document/(?P<unique_id>[-\w]+)$', base_views.particular_document,
         name='particular_document'),
-    url(r'^preview/(?P<unique_id>[-\w]+)$', base_views.document_preview,
+    url(r'^document/preview/(?P<unique_id>[-\w]+)$', base_views.document_preview,
         name='preview_document'),
     url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.MEDIA_ROOT}),
