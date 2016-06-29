@@ -1,0 +1,238 @@
+ $(document).ready(function(){
+
+    //function to display a modal box to change the name of the input box
+    $(document.body).on("click", '.rectangle_entry', 
+      function(event){
+        var element_id = $(this).attr("id");
+        element_id = element_id.substring(0, element_id.length-6);
+        $("#variable_id").val(element_id);
+        $('#myModal').modal('show');
+        autosuggest(elements_available);
+    });
+
+    //function to change the backgound color of the output div if the relative select box is clicked
+    $(document.body).on("click",".select-areas-background-area", function(event){
+        var box_id = $(this).attr("id");
+        
+        $("#id_" + box_id).css("background-color", "red");
+    });
+    var image_height = $("img#example").height();
+    var image_width = $("img#example").width();
+    var number_of_boxes = 0;
+
+    {%for element in document.extractedelements_set.all%}
+    
+        number_of_boxes += 1;
+        create_rectangle_selection(
+            {{element.x1_coordinate}} * image_width,
+            {{ element.y1_coordinate}} * image_height ,
+            {{element.block_width}} * image_width,
+            {{element.block_height}} * image_height
+        );
+        var index_of_new_name = elements_available.indexOf("{{element.element.element_name}}");
+        elements_used.push("{{element.element.element_name}}");
+        elements_available.splice(index_of_new_name, 1);
+        delete element_rectangle["rectangle_box"+ number_of_boxes] ;
+        element_rectangle["{{element.element.element_name}}"] = "rectangle_box"+ number_of_boxes;
+
+    {%endfor%}
+
+    console.log(element_rectangle);
+    update_local_storage_variables(elements_available, elements_used, element_rectangle, number_of_boxes);
+    output_coordinates();
+
+    $(document.body).on("click", "#save_element", function(){
+      var element_id = $("#variable_id").val();
+      var element_new_name = $("#variable_name").val();
+      $("#variable_name").val("");
+
+      if (element_new_name == null || element_new_name == ""){}
+
+      else{
+        $("#"+element_id+"_entry").html(element_new_name);
+
+        var key_name  = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === element_id})[0];
+        if(key_name == null)
+        {  
+            element_rectangle[element_new_name] = element_id;  
+        }
+        else{
+            var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === element_id})[0];
+            //element_rectangle[element_new_name] = element_id;
+            delete element_rectangle[key_name] ;
+            element_rectangle[element_new_name] = element_id;
+        }
+        $("#myModal").modal('hide');
+        var index_of_new_name = elements_available.indexOf(element_new_name);
+        elements_used.push(element_new_name);
+        elements_available.splice(index_of_new_name, 1);
+
+
+        var boxes_count = localStorage.getItem("boxes_count");
+
+        update_local_storage_variables(elements_available, elements_used, element_rectangle, boxes_count);
+
+        /*check if the element_new_name exists in element_available, then remove that elemeent from the
+          elements_available array
+          also add the new element in elements_used array
+        */
+        //console.log("rectangle = ", element_rectangle);            //console.log(element_new_name);
+      }
+    });
+
+    //set variables to local storage
+    update_local_storage_variables(elements_available, elements_used, element_rectangle, boxes_count);
+    
+    //update output display
+    update_elements_tables(elements_available, "elements_available");
+        
+    var binding = {};
+
+
+    $("#elements_available").change(function(){
+      /*
+          Update all variables and objects if a new object is selected from the 
+          elements_available dropdown
+      */
+      var value = $("#elements_available").val();
+      var index = elements_available.indexOf(value);
+      elements_used.push(value);
+      elements_available.splice(index, 1);
+      
+      /*
+      create new rectangle_box. UPdate this function when implementing preview
+      functionality. get x, y, height, width from the average of the x, y, height, width
+      of that particular element and update the values in the areaOptions
+      */
+      $.get(
+          window.location["pathname"] + "/"+value,
+          function(json) {
+              if (json["error"] == "true")
+              {
+                alert(json["message"]);
+              }
+              else{
+                var image = $("img#example")[0];
+                var i_x = image.naturalWidth;
+                var i_y = image.naturalHeight; 
+                var im_width = $("#example").width();
+                var im_height = $("#example").height();
+                var x = json["x"]["x1_coordinate__avg"] * im_width,
+                  y = json["y"]["y1_coordinate__avg"] * im_height,
+                  height = json["height"]["block_height__avg"] * im_height,
+                  width = json["width"]["block_width__avg"] * im_width;
+                if (x==0 && y==0 && height==0 && width == 0)
+                {
+                 x = Math.floor((Math.random() * 200));
+                 y = Math.floor((Math.random() * 200));
+                 height = 100;
+                 width = 100;
+                }
+                create_rectangle_selection(x, y, width, height );        
+                //alert("rectangle created at " + x,y);  
+                console.log(x,y, width,height )      ;
+                      var boxes_count = parseInt(localStorage.getItem("boxes_count")) ;
+                console.log("bxses = ", boxes_count);
+                var rectangle_box_id = 'rectangle_box'+boxes_count;
+                console.log("Rectangle_id = ", rectangle_box_id);
+                //for the current selection set border color red
+                $(".select-areas-outline").css("border", "1px solid black")
+                $("#"+rectangle_box_id).css("border","1px solid red");
+
+                var key_name  = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === rectangle_box_id})[0];
+                if(key_name == null)
+                {  
+                    
+                    element_rectangle[value] = rectangle_box_id;  
+                }
+                else{
+                
+                    delete element_rectangle[key_name] ;
+                    element_rectangle[value] = rectangle_box_id;
+
+                    
+                }
+                console.log("Rectangles = ", element_rectangle);
+                //element_rectangle[value] = rectangle_box_id;
+
+                //update elements_available and elements_used dropdown
+                update_elements_tables(elements_available, "elements_available");
+                update_elements_tables(elements_used, "elements_used");
+
+                //update local storage variables
+                
+                update_local_storage_variables(elements_available, elements_used, element_rectangle, boxes_count);
+
+                //output the co-ordinates on right hand side 
+                output_coordinates(); 
+
+              }
+              
+          },
+          "json"
+      );         
+
+
+      //get the rectangle box count   
+    });
+    $("#submit").click(function(){
+        data = {};
+        data["csrfmiddlewaretoken"] = "{{csrf_token}}";
+        
+        //var rectangle_binding = JSON.parse(localStorage.getItem("rectangle_binding"));
+        var all_outlines = $(".select-areas-outline");
+        var image_width = $("#example").width();
+        var image_height = $("#example").height();
+        var image = $("img#example")[0];
+        var image_resolution_x = image.naturalWidth;
+        var image_resolution_y = image.naturalHeight;  
+        data["image_width"] = image_resolution_x;
+        data["image_height"] = image_resolution_y;
+        var rectangles = [];          
+
+        for(i =0;i<all_outlines.length;i++)
+        {
+          var box_id = all_outlines[i].id;
+          
+          
+          var width  = $("#" + box_id).width() ;
+          var height = $("#"+box_id).height();
+          var a_x = $("#"+box_id).position().left/image_width;
+          var a_y = $("#"+box_id).position().top/image_height;        
+          var c_x = ($("#"+box_id).position().left + width)/image_width;
+          var c_y = ($("#"+box_id).position().top + height)/image_height;        
+          var height_ratio = height/image_height;
+          var width_ratio = width/image_width;
+          var width  = width/image_width ;
+          var height = height/image_height;
+          
+          var key_name = Object.keys(element_rectangle).filter(function(key) {return element_rectangle[key] === box_id})[0];
+          rectangles.push(key_name);
+          data[key_name] = {"width":width, "height":height,
+            "x" : a_x, "y":a_y};
+        }
+        
+        data["elements"] = rectangles;
+        
+        data = JSON.stringify(data);
+        datam = data;
+        $.post(
+            "{%url 'particular_document' document.id %}",
+            {
+              data: JSON.stringify(data),
+              "csrfmiddlewaretoken": "{{csrf_token}}"
+            },  
+            function(data) {
+               console.log(data);
+               if (data["error"] == "true")
+               {
+               alert(data["message"]);
+               }
+               else{
+                alert(data["message"]);
+               }
+            }
+        );         
+    });    
+      
+  });

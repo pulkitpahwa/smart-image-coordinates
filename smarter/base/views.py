@@ -127,6 +127,7 @@ def particular_document(request, unique_id):
                                   context_instance=RequestContext(request))
 
     elif request.method == "POST":
+
         data = json.loads(json.loads(request.POST['data']))
         if document.image_resolution_x and document.image_resolution_y:
             pass
@@ -142,7 +143,6 @@ def particular_document(request, unique_id):
 
             extracted_element = ExtractedElements.objects.get_or_create(
                     document=document, element=element)[0]
-
             extracted_element.x1_coordinate = data[element_name]["x"]
             extracted_element.y1_coordinate = data[element_name]["y"]
             extracted_element.block_width = data[element_name]["width"]
