@@ -1,5 +1,63 @@
 {%extends "base.html"%}
 {%block main_block%}
-Hello world
+<div class = "col-sm-12 col-md-8 col-lg-8 col-sm-offset-2 col-md-offset-2">
+<h1>Image Coordinates Extraction Project</h1>
+
+<p>Image Coordinates Extraction Project is a django project to select elements from a image</p>
+
+<h2>Functionalities </h2>
+<ul></li>
+<li>Create a category</li>
+<li>Create a template format</li>
+<li>Upload image document</li>
+<li>Zoom in and zoom out on an image</li>
+<li>Draw and Select (rectangular) elements from the image</li>
+<li>Auto-suggest position of a newly created element based on its name</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+<p>It is advised to install all the requirements inside <a href="https://virtualenv.pypa.io/en/latest/">virtualenv</a>, use <a href="https://virtualenvwrapper.readthedocs.org/en/latest/">virtualenvwrapper</a> to manage virtualenvs </p>
+<pre><code>pip install -r requirements.txt
+python manage.py migrate --noinput
+</code></pre>
+
+<h3 id="running-the-server">Running the server</h3>
+<p>Start the python server by running <code>python manage.py runserver</code> command in the root folder of the project.</p>
+<p>Check the server running on <a href="http://localhost:8000/">http://localhost:8000/</a></p>
+
+
+<h2 id="end-user">End User</h2>
+<h3 id="acronyms">Acronyms</h3>
+<ul>
+<li>Category : The umbrella unit. e.g. Cafe, School, Hospital, Grocery Store, etc.</li>
+<li>Template Format/ Format/ Template : Refers to the particular type of format of documents. e.g. for category 'Cafe', formats can be CCD, Barista, Starbucks, etc.</li>
+<li>Document : The image file for which the elements are to be extracted</li>
+<li>Element : The part of the document that is selected</li>
+</ul>
+<h3 id="creating-a-category">Creating a category</h3>
+<p>Go to <code>/category/add</code> and fill up the form</p>
+<h3 id="creating-a-template-format">Creating a template format</h3>
+<p>Go to <code>/template/add</code> and fill up the form</p>
+<h3 id="uploading-a-document">Uploading a document</h3>
+<p>Go to <code>/upload-document</code> and fill up the form</p>
+<h3 id="selecting-elements-from-the-document">Selecting elements from the document</h3>
+<ul>
+<li>Image can be zoomed in/ zoomed out by scrolling over image area. 
+  You can zoom in at a particular point by keeping the mouse pointer to that particular point</li>
+<li>To create an element, either you can add it by selecting the element name from the dropdown on top of the right hand side, or you can create an element by clicking on the image</li>
+<li>If an element is selected, its <strong>border</strong> will turn <strong>red</strong> and its corresponding entry in the output will have <strong>red background</strong></li>
+<li>To change the name of the element, select the element for which you want to change the name. Click on the name of the object, and type the new name in the modal box that opens. To save, click <em>save element</em> button</li>
+</ul>
+
+<h3 id="saving-the-elements-to-the-database">Saving the elements to the database</h3>
+<ul>
+<li>Once you have created/ selected elements on the document, click on <strong>Update Selection</strong> button</li>
+</ul>
+<h3 id="preview-the-document-update-the-document">Preview the document/ update the document</h3>
+<ul>
+<li>Document can be previewed or updated from <code>/document/preview/(ID-of-the-document)</code> link</li>
+</ul>
+
+</div>
 {%endblock%}
 
