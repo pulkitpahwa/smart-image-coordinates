@@ -154,7 +154,7 @@ def particular_document(request, unique_id):
             pass
         else:
             document.image_resolution_x = data["image_width"]
-            document.image_resolution_x = data["image_height"]
+            document.image_resolution_y = data["image_height"]
             document.save()
         template = document.template_format
         document.extractedelements_set.all().delete()
